@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: postgres
+    container_name: gym-track-db
+    restart: always
+    ports:
+      - "5432:5432"
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: sedrft-3524
+      POSTGRES_USER: postgres
+      POSTGRES_DB: my-gym-track-api
