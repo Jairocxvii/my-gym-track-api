@@ -1,7 +1,7 @@
 // ejercicio.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity()
+@Entity("ejercicio")
 export class Ejercicio {
     @PrimaryGeneratedColumn()
     ejercicio_id: number;

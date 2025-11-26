@@ -2,7 +2,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 import { Usuario } from './usuario';
 
-@Entity()
+@Entity("preferencia")
 export class Preferencia {
     @PrimaryGeneratedColumn()
     preferencia_id: number;

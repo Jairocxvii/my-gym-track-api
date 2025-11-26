@@ -1,16 +1,14 @@
 // registro-entrenamiento.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Usuario } from './usuario.entity';
 import { Sesion } from './sesion';
 import { SesionEjercicio } from './sesion-ejercicio';
 
-@Entity()
+@Entity("registro_entrenamiento")
 export class RegistroEntrenamiento {
     @PrimaryGeneratedColumn()
     registro_id: number;
-
-    @ManyToOne(() => Usuario)
-    usuario: Usuario;
+    @Column({ name: 'usuario_id' })
+    usuarioId: number;
 
     @ManyToOne(() => Sesion)
     sesion: Sesion;

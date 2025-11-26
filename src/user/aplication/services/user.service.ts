@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from '../../infraestructure/dtos/create-user.dto';
-import { UpdateUserDto } from '../../infraestructure/dtos/update-user.dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { USUARIO_PORT, UsuarioPort } from 'src/user/domain/ports/usuario.port';
+import { UsuarioApiMapper } from '../mappers/usuario-api.mapper';
+import { CreateUsuarioDto } from '../dtos/create-usuario.dto';
+import { UsuarioEntity } from 'src/user/domain/entities/usuario.entity';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @Inject(USUARIO_PORT)
+    private readonly usuarioPort: UsuarioPort
+  ) { }
+
+  async create(createUserDto: CreateUsuarioDto) {
+    const usuario = new UsuarioEntity(createUserDto);
+    const usuarioCreado = await this.usuarioPort.create(usuario);
+    return UsuarioApiMapper.toResponse(usuarioCreado);
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll() {
+
+    const usuarios = await this.usuarioPort.findAll();
+    return usuarios.map((usuario) => UsuarioApiMapper.toResponse(usuario));
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    const usuario = await this.usuarioPort.findOneById(id);
+    if (!usuario) {
+      throw new Error('Usuario no encontrado');
+    }
+    return UsuarioApiMapper.toResponse(usuario);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: any) {
+    const usuario = await this.usuarioPort.findOneById(id);
+    if (!usuario) {
+      throw new Error('Usuario no encontrado');
+    }
+    const usuarioActualizado = await this.usuarioPort.update(id, updateUserDto);
+    return UsuarioApiMapper.toResponse(usuarioActualizado);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    const usuario = await this.usuarioPort.remove(id);
+    return UsuarioApiMapper.toResponse(usuario);
   }
 }

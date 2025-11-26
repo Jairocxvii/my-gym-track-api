@@ -3,7 +3,7 @@ import { Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Ejercicio } from './ejercicio';
 import { Equipamiento } from './equipamiento';
 
-@Entity()
+@Entity("ejercicio_equipamiento")
 export class EjercicioEquipamiento {
     @PrimaryColumn()
     ejercicio_id: number;

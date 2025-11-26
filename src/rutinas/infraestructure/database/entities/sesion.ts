@@ -3,7 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Unique } 
 import { Rutina } from './rutina';
 import { SesionEjercicio } from './sesion-ejercicio';
 
-@Entity()
+@Entity("sesion")
 @Unique(['rutina', 'dia_orden'])
 export class Sesion {
     @PrimaryGeneratedColumn()

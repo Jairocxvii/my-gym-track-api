@@ -1,10 +1,9 @@
-// usuario.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from 'typeorm';
+
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { Preferencia } from './preferencia';
 import { Progreso } from './progreso';
-import { Rutina } from './rutina';
 
-@Entity()
+@Entity("usuario")
 export class Usuario {
     @PrimaryGeneratedColumn()
     usuario_id: number;
@@ -39,12 +38,37 @@ export class Usuario {
     @Column({ type: 'timestamptz', default: () => 'now()' })
     updated_at: Date;
 
+    @Column({ length: 150, unique: true })
+    email: string;
+
+    @Column({ length: 20, nullable: true })
+    celular: string;
+
+    @Column({ length: 255 })
+    password_hash: string;
+
+    @Column({ length: 500, nullable: true })
+    refresh_token: string;
+
+    @Column({ length: 50, default: 'usuario' })
+    rol: string;
+
+    @Column({ type: 'boolean', default: false })
+    habeas_data_aceptado: boolean;
+
+    @Column({ type: 'timestamptz', nullable: true })
+    fecha_habeas_data: Date;
+
+    @Column({ type: 'boolean', default: false })
+    is_deleted: boolean;
+
+    @Column({ type: 'timestamptz', nullable: true })
+    deleted_at: Date;
+
     @OneToOne(() => Preferencia, (p) => p.usuario)
     preferencia: Preferencia;
 
     @OneToMany(() => Progreso, (p) => p.usuario)
     progreso: Progreso[];
 
-    @OneToMany(() => Rutina, (r) => r.usuario)
-    rutinas: Rutina[];
 }

@@ -1,9 +1,8 @@
 // sesion-ejercicio.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique } from 'typeorm';
 import { Sesion } from './sesion';
-import { Ejercicio } from './ejercicio.entity';
 
-@Entity()
+@Entity("sesion_ejercicio")
 @Unique(['sesion', 'orden'])
 export class SesionEjercicio {
     @PrimaryGeneratedColumn()
@@ -12,8 +11,8 @@ export class SesionEjercicio {
     @ManyToOne(() => Sesion, (s) => s.ejercicios)
     sesion: Sesion;
 
-    @ManyToOne(() => Ejercicio)
-    ejercicio: Ejercicio;
+    @Column({ name: 'ejercicio_id' })
+    ejercicioId: number;
 
     @Column()
     orden: number;
