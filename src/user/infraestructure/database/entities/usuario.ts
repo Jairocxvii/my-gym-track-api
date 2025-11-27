@@ -1,5 +1,5 @@
 
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany, PrimaryColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from 'typeorm';
 import { Preferencia } from './preferencia';
 import { Progreso } from './progreso';
 

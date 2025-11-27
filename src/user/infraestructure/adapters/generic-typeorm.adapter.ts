@@ -1,24 +1,23 @@
-import { Repository, DeepPartial, FindOptionsWhere, ObjectLiteral, FindManyOptions } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException } from "@nestjs/common";
+import { Between, DeepPartial, FindManyOptions, FindOptionsWhere, In, Like, ObjectLiteral, Repository } from "typeorm";
+import { Query } from "./query.types";
 
-/**
- * Adaptador base genérico para TypeORM que implementa operaciones CRUD
- * siguiendo los principios de Arquitectura Hexagonal.
- * * @template E - Entidad de DOMINIO
- * @template O - Entidad TypeORM (ORM)
- * @template K - Tipo de la Primary Key (number | string | UUID, etc.)
- */
-export abstract class GenericTypeOrmAdapter<E, O extends ObjectLiteral, K = number> {
+export abstract class GenericTypeOrmAdapter<
+    E,
+    O extends ObjectLiteral,
+    PK extends keyof O
+> {
     constructor(protected readonly repository: Repository<O>) { }
 
-    protected abstract primaryKeyName: keyof O;
+    protected abstract primaryKeyName: PK;
 
     protected abstract toDomain(orm: O): E;
 
-
     protected abstract toEntity(domain: E): DeepPartial<O>;
 
-    /* -------------- CRUD genérico -------------- */
+    protected abstract toColumnName(prop: keyof E): string;
+
+    /* -------------- CRUD -------------- */
 
     async create(domain: E): Promise<E> {
         const partial = this.toEntity(domain);
@@ -27,135 +26,153 @@ export abstract class GenericTypeOrmAdapter<E, O extends ObjectLiteral, K = numb
     }
 
     async createMany(domains: E[]): Promise<E[]> {
-        const partials = domains.map((d) => this.toEntity(d));
-        const saved = await this.repository.save(partials);
+        const saved = await this.repository.save(domains.map(this.toEntity));
         return saved.map((o) => this.toDomain(o as O));
     }
 
-    async findAll(): Promise<E[]> {
-        const list = await this.repository.find();
-        return list.map((o) => this.toDomain(o));
+    async findAll(query?: Query<E>): Promise<E[]> {
+        const opts = this.buildFindManyOptions(query);
+        const rows = await this.repository.find(opts);
+        return rows.map((o) => this.toDomain(o));
     }
 
-    /**
-     * Busca UNA entidad por criterios generales (WHERE).
-     * @param where Criterios de búsqueda usando FindOptionsWhere de TypeORM
-     * @returns La entidad de dominio o null si no existe
-     */
+    async count(query?: Query<E>): Promise<number> {
+        const opts = this.buildFindManyOptions(query);
+        return this.repository.count(opts);
+    }
+
     async findOneByWhere(where: FindOptionsWhere<O>): Promise<E | null> {
         const found = await this.repository.findOneBy(where);
         return found ? this.toDomain(found) : null;
     }
 
-    /**
-     * Busca MULTIPLES entidades por criterios generales (WHERE).
-     * @param where Criterios de búsqueda usando FindOptionsWhere de TypeORM
-     * @returns Un array de entidades de dominio
-     */
-    async findByWhere(where: FindOptionsWhere<O>): Promise<E[]> {
-        const list = await this.repository.findBy(where);
-        return list.map((o) => this.toDomain(o));
-    }
-
-    /**
-     * Busca UNA entidad por criterios generales (WHERE) y lanza excepción si no existe.
-     * @param where Criterios de búsqueda
-     * @throws NotFoundException
-     */
     async findOneByWhereOrFail(where: FindOptionsWhere<O>): Promise<E> {
-        const entity = await this.findOneByWhere(where);
-
-        if (!entity) {
-            // No se puede inferir el ID, así que usamos un mensaje más general
-            throw new NotFoundException(
-                `${this.repository.metadata.name} not found by given criteria`,
-            );
+        const e = await this.findOneByWhere(where);
+        if (!e) {
+            throw new NotFoundException(`${this.repository.metadata.name} not found`);
         }
-
-        return entity;
+        return e;
     }
 
-    async findOneById(id: K): Promise<E | null> {
-        const whereClause: FindOptionsWhere<O> = {
+    async findOneById(id: O[PK]): Promise<E | null> {
+        return this.findOneByWhere({
             [this.primaryKeyName]: id,
-        } as FindOptionsWhere<O>;
-
-        return this.findOneByWhere(whereClause);
+        } as FindOptionsWhere<O>);
     }
 
-    async findOneByIdOrFail(id: K): Promise<E> {
-        const entity = await this.findOneById(id);
-
-        if (!entity) {
+    async findOneByIdOrFail(id: O[PK]): Promise<E> {
+        const e = await this.findOneById(id);
+        if (!e) {
             throw new NotFoundException(
-                `${this.repository.metadata.name} with id ${id} not found`
+                `${this.repository.metadata.name} with ${String(this.primaryKeyName)}=${id} not found`,
             );
         }
-
-        return entity;
+        return e;
     }
 
-    async update(id: K, domain: E): Promise<E> {
+    async update(id: O[PK], domain: E): Promise<E> {
         await this.findOneByIdOrFail(id);
-        const partial = this.toEntity(domain);
-        await this.repository.update(id as any, partial as any);
+
+        await this.repository.update(
+            { [this.primaryKeyName]: id } as FindOptionsWhere<O>,
+            this.toEntity(domain) as any
+        );
+
         const updated = await this.repository.findOneBy({
-            id
+            [this.primaryKeyName]: id,
         } as FindOptionsWhere<O>);
 
         return this.toDomain(updated!);
     }
 
-    async partialUpdate(id: K, partial: Partial<E>): Promise<E> {
+    async partialUpdate(id: O[PK], partial: Partial<E>): Promise<E> {
         await this.findOneByIdOrFail(id);
-        await this.repository.update(id as any, partial as any);
+
+        await this.repository.update(
+            { [this.primaryKeyName]: id } as any,
+            partial as any,
+        );
 
         const updated = await this.repository.findOneBy({
-            id
-        } as FindOptionsWhere<O>);
+            [this.primaryKeyName]: id,
+        } as any);
 
         return this.toDomain(updated!);
     }
 
-    async remove(id: K): Promise<E> {
+    async delete(id: O[PK]): Promise<E> {
         const found = await this.findOneByIdOrFail(id);
 
-        const ormEntity = await this.repository.findOneBy({
-            id
-        } as FindOptionsWhere<O>);
+        const orm = await this.repository.findOneBy({
+            [this.primaryKeyName]: id,
+        } as any);
 
-        await this.repository.remove(ormEntity!);
+        await this.repository.remove(orm!);
 
         return found;
     }
 
-    async removeMany(ids: K[]): Promise<E[]> {
-        const entities = await Promise.all(
-            ids.map((id) => this.findOneByIdOrFail(id))
-        );
+    async deleteMany(ids: O[PK][]): Promise<E[]> {
+        const entities = await Promise.all(ids.map((id) => this.findOneByIdOrFail(id)));
 
         const ormEntities = await this.repository.findBy({
-            id: ids as any
-        } as FindOptionsWhere<O>);
+            [this.primaryKeyName]: ids as any,
+        } as any);
 
         await this.repository.remove(ormEntities);
 
         return entities;
     }
 
-    async exists(id: K): Promise<boolean> {
+    async exists(id: O[PK]): Promise<boolean> {
         const count = await this.repository.countBy({
-            id
-        } as FindOptionsWhere<O>);
+            [this.primaryKeyName]: id,
+        } as any);
 
         return count > 0;
-    }
-
-    async count(): Promise<number> {
-        return this.repository.count();
     }
 
     async clear(): Promise<void> {
         await this.repository.clear();
     }
+
+    private buildFindManyOptions(q?: Query<E>): FindManyOptions<O> {
+        if (!q) return {};
+
+        const where: any = {};
+        const order: any = {};
+        let take: number | undefined;
+        let skip: number | undefined;
+
+        /* igualdad o IN */
+        for (const [k, v] of Object.entries(q)) {
+            if (k.startsWith('_')) continue;
+            const col = this.toColumnName(k as keyof E); // ← traducción
+            if (Array.isArray(v)) where[col] = In(v);
+            else where[col] = v;
+        }
+
+        /* LIKE */
+        if (q._like) {
+            for (const [k, v] of Object.entries(q._like)) where[k] = Like(`%${v}%`);
+        }
+
+        /* rangos */
+        if (q._range) {
+            for (const [k, v] of Object.entries(q._range)) {
+                const { from, to } = v as { from: any; to: any }; // <-- aquí
+                where[k] = Between(from, to);
+            }
+        }
+
+        /* orden */
+        if (q._order) order[q._order.by as string] = q._order.dir;
+
+        /* paginación */
+        if (q._limit) take = q._limit;
+        if (q._offset) skip = q._offset;
+
+        return { where, order, take, skip };
+    }
+
 }

@@ -7,6 +7,8 @@ import { UsuarioAdapter } from './infraestructure/adapters/usuario.adapter';
 import { Usuario } from './infraestructure/database/entities/usuario';
 import { Preferencia } from './infraestructure/database/entities/preferencia';
 import { Progreso } from './infraestructure/database/entities/progreso';
+import { PasswordHasher } from './domain/services/password-hasher';
+import { BcryptPasswordHasher } from './infraestructure/cryptography/bcrypt-password-hasher';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Usuario, Preferencia, Progreso])],
@@ -15,6 +17,10 @@ import { Progreso } from './infraestructure/database/entities/progreso';
     {
       provide: USUARIO_PORT,
       useClass: UsuarioAdapter,
+    },
+    {
+      provide: PasswordHasher,
+      useClass: BcryptPasswordHasher,
     },
     UserService,
   ],

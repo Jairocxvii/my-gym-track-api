@@ -9,9 +9,9 @@ import { Usuario } from '../database/entities/usuario';
 
 @Injectable()
 export class UsuarioAdapter
-    extends GenericTypeOrmAdapter<UsuarioEntity, Usuario, number>
+    extends GenericTypeOrmAdapter<UsuarioEntity, Usuario, 'usuario_id'>
     implements UsuarioPort {
-    protected primaryKeyName: keyof Usuario = 'usuario_id';
+    protected primaryKeyName: 'usuario_id' = 'usuario_id';
     constructor(
         @InjectRepository(Usuario)
         repository: Repository<Usuario>,
@@ -47,9 +47,6 @@ export class UsuarioAdapter
         return usuario;
     }
 
-    /**
-     * Convierte una entidad de dominio a formato TypeORM
-     */
     protected toEntity(domain: UsuarioEntity): DeepPartial<Usuario> {
         return {
             usuario_id: domain.id,
@@ -73,5 +70,30 @@ export class UsuarioAdapter
         };
     }
 
+    protected toColumnName(prop: keyof UsuarioEntity): string {
+        return USER_DOMAIN_TO_COLUMN[prop];
+    }
+}
 
+export const USER_DOMAIN_TO_COLUMN: Record<keyof UsuarioEntity, string> = {
+    id: 'usuario_id',
+    email: 'email',
+    passwordHash: 'password_hash',
+    isDeleted: 'is_deleted',
+    nombre: 'nombre',
+    edad: 'edad',
+    sexo: 'sexo',
+    pesoKg: 'peso_kg',
+    alturaCm: 'altura_cm',
+    nivel: 'nivel',
+    celular: 'celular',
+    rol: 'rol',
+    habeasDataAceptado: 'habeas_data_aceptado',
+    condicionesMedicas: 'condiciones_medicas',
+    objetivos: 'objetivos',
+    refreshToken: 'refresh_token',
+    fechaHabeasData: 'fecha_habeas_data',
+    deletedAt: 'deleted_at',
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
 }
