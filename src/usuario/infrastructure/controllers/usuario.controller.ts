@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { UsuarioService } from '../../aplication/services/usuario.service';
-import { ProgresoService } from '../../aplication/services/progreso.service';
+import { UsuarioService } from '../../application/services/usuario.service';
+import { ProgresoService } from '../../application/services/progreso.service';
 import { FindUsuariosDto } from '../dto/find-usuarios.dto';
-import { UpdateUserDto } from 'src/ejercicio/infraestructure/dtos/update-user.dto';
-import { UsuarioCreateDto } from 'src/usuario/aplication/dtos/usuario-create.dto';
-import { UsuariosFindQuery } from '../../aplication/dtos/usuarios-find.query';
-import { ProgresoCreateDto } from 'src/usuario/aplication/dtos/progreso-create.dto';
+import { UpdateUserDto } from 'src/usuario/application/dtos/usuario-update.dto';
+import { UsuarioCreateDto } from 'src/usuario/application/dtos/usuario-create.dto';
+import { UsuariosFindQuery } from '../../application/dtos/usuarios-find.query';
+import { ProgresoCreateDto } from 'src/usuario/application/dtos/progreso-create.dto';
 
 
 @Controller('usuario')

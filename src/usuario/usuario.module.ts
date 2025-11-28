@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsuarioService } from './aplication/services/usuario.service';
-import { ProgresoService } from './aplication/services/progreso.service';
-import { UsuarioController } from './infraestructure/controllers/usuario.controller';
+import { UsuarioService } from './application/services/usuario.service';
+import { ProgresoService } from './application/services/progreso.service';
+import { UsuarioController } from './infrastructure/controllers/usuario.controller';
 import { USUARIO_PORT } from './domain/ports/usuario.port';
-import { UsuarioAdapter } from './infraestructure/adapters/usuario.adapter';
-import { Usuario } from './infraestructure/database/entities/usuario';
-import { Preferencia } from './infraestructure/database/entities/preferencia';
-import { Progreso } from './infraestructure/database/entities/progreso';
+import { UsuarioAdapter } from './infrastructure/adapters/usuario.adapter';
+import { Usuario } from './infrastructure/database/entities/usuario';
+import { Preferencia } from './infrastructure/database/entities/preferencia';
+import { Progreso } from './infrastructure/database/entities/progreso';
 import { PROGRESO_PORT } from './domain/ports/progreso.port';
-import { ProgresoAdapter } from './infraestructure/adapters/progreso.adapter';
+import { ProgresoAdapter } from './infrastructure/adapters/progreso.adapter';
 import { CommonModule } from '@common/common.module';
 
 
