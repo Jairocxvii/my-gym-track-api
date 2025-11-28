@@ -8,6 +8,12 @@
 $ npm install
 ```
 
+## montar BD
+
+```bash
+docker-compose up -d 
+```
+
 ## Compile and run the project
 
 ```bash
@@ -15,7 +21,7 @@ $ npm install
 $ npm run start
 
 # watch mode
-$ npm run start:dev
+$ npm run start:devp
 
 # production mode
 $ npm run start:prod
