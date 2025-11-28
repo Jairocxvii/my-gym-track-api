@@ -13,20 +13,20 @@ export abstract class GenericTypeOrmAdapter<
 
     protected abstract toDomain(orm: O): E;
 
-    protected abstract toEntity(domain: E): DeepPartial<O>;
+    protected abstract toEntityDB(domain: E): DeepPartial<O>;
 
     protected abstract toColumnName(prop: keyof E): string;
 
     /* -------------- CRUD -------------- */
 
     async create(domain: E): Promise<E> {
-        const partial = this.toEntity(domain);
+        const partial = this.toEntityDB(domain);
         const saved = await this.repository.save(partial);
         return this.toDomain(saved as O);
     }
 
     async createMany(domains: E[]): Promise<E[]> {
-        const saved = await this.repository.save(domains.map(this.toEntity));
+        const saved = await this.repository.save(domains.map(this.toEntityDB));
         return saved.map((o) => this.toDomain(o as O));
     }
 
@@ -75,7 +75,7 @@ export abstract class GenericTypeOrmAdapter<
 
         await this.repository.update(
             { [this.primaryKeyName]: id } as FindOptionsWhere<O>,
-            this.toEntity(domain) as any
+            this.toEntityDB(domain) as any
         );
 
         const updated = await this.repository.findOneBy({

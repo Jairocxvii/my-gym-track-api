@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial } from 'typeorm';
-import { UsuarioEntity } from 'src/user/domain/entities/usuario.entity';
+import { UsuarioEntity } from 'src/usuario/domain/entities/usuario.entity';
 
-import { UsuarioPort } from 'src/user/domain/ports/usuario.port';
+import { UsuarioPort } from 'src/usuario/domain/ports/usuario.port';
 import { GenericTypeOrmAdapter } from './generic-typeorm.adapter';
 import { Usuario } from '../database/entities/usuario';
 
@@ -47,7 +47,7 @@ export class UsuarioAdapter
         return usuario;
     }
 
-    protected toEntity(domain: UsuarioEntity): DeepPartial<Usuario> {
+    protected toEntityDB(domain: UsuarioEntity): DeepPartial<Usuario> {
         return {
             usuario_id: domain.id,
             nombre: domain.nombre,

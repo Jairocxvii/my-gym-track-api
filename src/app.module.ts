@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { UserModule } from './user/user.module';
+import { UsuarioModule } from './usuario/usuario.module';
 import { CommonModule } from './common/common.module';
 import { join } from 'path';
 import { EjercicioModule } from './ejercicio/ejercicio.module';
@@ -25,7 +25,7 @@ import { AuthModule } from './auth/auth.module';
 
     synchronize: false,   // No tocar la BD existente
     autoLoadEntities: true,
-  }), UserModule, CommonModule, EjercicioModule, RutinasModule, AuthModule,],
+  }), UsuarioModule, CommonModule, EjercicioModule, RutinasModule, AuthModule,],
   controllers: [],
   providers: [],
 })

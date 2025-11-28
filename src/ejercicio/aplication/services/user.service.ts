@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../../infraestructure/dtos/create-user.dto';
 import { UpdateUserDto } from '../../infraestructure/dtos/update-user.dto';
-import { USUARIO_PORT, UsuarioPort } from 'src/user/domain/ports/usuario.port';
+import { USUARIO_PORT, UsuarioPort } from 'src/usuario/domain/ports/usuario.port';
 
 
 @Injectable()
-export class UserService {
+export class UsuarioService {
   /**
    *
    */

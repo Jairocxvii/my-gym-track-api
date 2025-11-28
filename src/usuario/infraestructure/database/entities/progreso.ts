@@ -1,15 +1,14 @@
 // progreso.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Usuario } from './usuario';
 
 @Entity("progreso")
 export class Progreso {
     @PrimaryGeneratedColumn()
     progreso_id: number;
-
-    @ManyToOne(() => Usuario, (u) => u.progreso)
+    @ManyToOne(() => Usuario, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'usuario_id' })
     usuario: Usuario;
-
     @Column({ type: 'date', default: () => 'current_date' })
     fecha: Date;
 
