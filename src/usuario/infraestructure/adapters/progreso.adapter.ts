@@ -4,7 +4,8 @@ import { Repository, DeepPartial } from 'typeorm';
 import { ProgresoEntity } from '../../domain/entities/progreso.entity';
 
 import { ProgresoPort } from '../../domain/ports/progreso.port';
-import { GenericTypeOrmAdapter } from './generic-typeorm.adapter';
+
+import { GenericTypeOrmAdapter } from '@common/database/generic-typeorm.adapter';
 import { Progreso } from '../database/entities/progreso';
 
 @Injectable()

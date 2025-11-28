@@ -4,7 +4,7 @@ import { Repository, DeepPartial } from 'typeorm';
 import { UsuarioEntity } from 'src/usuario/domain/entities/usuario.entity';
 
 import { UsuarioPort } from 'src/usuario/domain/ports/usuario.port';
-import { GenericTypeOrmAdapter } from './generic-typeorm.adapter';
+import { GenericTypeOrmAdapter } from '@common/database/generic-typeorm.adapter';
 import { Usuario } from '../database/entities/usuario';
 
 @Injectable()

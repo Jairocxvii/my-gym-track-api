@@ -3,20 +3,20 @@ import { USUARIO_PORT, UsuarioPort } from 'src/usuario/domain/ports/usuario.port
 import { UsuarioApiMapper } from '../mappers/usuario-api.mapper';
 import { UsuarioCreateDto } from '../dtos/usuario-create.dto';
 import { UsuarioEntity } from 'src/usuario/domain/entities/usuario.entity';
-import { PasswordHasher } from 'src/usuario/domain/services/password-hasher';
 import { UsuariosFindQuery } from '../dtos/usuarios-find.query';
+import { HasherService } from '@common/utils/hasher.service';
 
 @Injectable()
 export class UsuarioService {
   constructor(
     @Inject(USUARIO_PORT)
     private readonly usuarioPort: UsuarioPort,
-    private readonly passwordHasher: PasswordHasher
+    private readonly hasherService: HasherService,
   ) { }
 
   async create(createUserDto: UsuarioCreateDto) {
     const usuario = new UsuarioEntity(createUserDto);
-    usuario.passwordHash = await this.passwordHasher.hash(createUserDto.password);
+    usuario.passwordHash = await this.hasherService.hash(createUserDto.password);
     const usuarioCreado = await this.usuarioPort.create(usuario);
     return UsuarioApiMapper.toResponse(usuarioCreado);
   }

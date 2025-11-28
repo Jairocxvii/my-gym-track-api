@@ -1,31 +1,27 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UsuarioModule } from './usuario/usuario.module';
 import { CommonModule } from './common/common.module';
-import { join } from 'path';
 import { EjercicioModule } from './ejercicio/ejercicio.module';
 import { RutinasModule } from './rutinas/rutinas.module';
 import { AuthModule } from './auth/auth.module';
 @Module({
-  imports: [ConfigModule.forRoot({
-    isGlobal: true,
-  }),
+  imports: [
+    // 1. Configuración global
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
 
-  TypeOrmModule.forRoot({
-    type: 'postgres',
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT) || 5432,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
+    // 2. Módulo común (incluye DatabaseModule)
+    CommonModule,
 
-    // Entidades generadas a partir de la BD
-    entities: [join(__dirname, '../infrastructure/database/entities/**/*.{ts,js}')],
-
-    synchronize: false,   // No tocar la BD existente
-    autoLoadEntities: true,
-  }), UsuarioModule, CommonModule, EjercicioModule, RutinasModule, AuthModule,],
+    // 3. Módulos de dominio
+    UsuarioModule,
+    EjercicioModule,
+    RutinasModule,
+    AuthModule,
+  ],
   controllers: [],
   providers: [],
 })

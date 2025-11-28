@@ -1,4 +1,3 @@
-import { NotFoundException } from "@nestjs/common";
 import { Between, DeepPartial, FindManyOptions, FindOptionsWhere, In, Like, ObjectLiteral, Repository } from "typeorm";
 import { Query } from "./query.types";
 
@@ -49,7 +48,7 @@ export abstract class GenericTypeOrmAdapter<
     async findOneByWhereOrFail(where: FindOptionsWhere<O>): Promise<E> {
         const e = await this.findOneByWhere(where);
         if (!e) {
-            throw new NotFoundException(`${this.repository.metadata.name} not found`);
+            throw new Error(`${this.repository.metadata.name} not found`);
         }
         return e;
     }
@@ -63,7 +62,7 @@ export abstract class GenericTypeOrmAdapter<
     async findOneByIdOrFail(id: O[PK]): Promise<E> {
         const e = await this.findOneById(id);
         if (!e) {
-            throw new NotFoundException(
+            throw new Error(
                 `${this.repository.metadata.name} with ${String(this.primaryKeyName)}=${id} not found`,
             );
         }
