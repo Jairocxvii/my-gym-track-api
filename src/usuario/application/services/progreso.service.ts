@@ -17,17 +17,7 @@ export class ProgresoService {
         const progresoCreado = await this.progresoPort.create(progreso);
         return ProgresoApiMapper.toResponse(progresoCreado);
     }
-    /*
-        async findAll(query: FindprogresosQuery) {
-            const progresos = await this.progresoPort.findAll({
-                ...(query.isDeleted !== undefined && { isDeleted: query.isDeleted }),
-                ...(query.usuario_id && { _like: { usuario_id: query.usuario_id } }),
-                ...(query.limit && { _limit: query.limit }),
-                ...(query.offset && { _offset: query.offset }),
-                _order: { by: 'usuario_id', dir: 'ASC' },
-            });
-            return progresos.map((progreso) => ProgresoApiMapper.toResponse(progreso));
-        }*/
+
 
     async findOne(id: number) {
 

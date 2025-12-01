@@ -20,6 +20,21 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    // CONFIGURACIÓN DE PATH ALIASES
+    "paths": {
+      "@common/*": [
+        "src/common/*"
+      ],
+      "@modules/*": [
+        "src/modules/*"
+      ],
+      "@config/*": [
+        "src/config/*"
+      ],
+      "@shared/*": [
+        "src/shared/*"
+      ]
+    }
   }
 }

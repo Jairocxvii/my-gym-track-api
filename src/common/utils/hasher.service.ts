@@ -1,9 +1,10 @@
 import bcrypt from 'bcrypt';
-import { PasswordHasher } from '../../domain/services/password-hasher';
+import { Injectable } from '@nestjs/common';
+
 
 const SALT_ROUNDS = 12;
-
-export class BcryptPasswordHasher implements PasswordHasher {
+@Injectable()
+export class HasherService {
     async hash(plain: string): Promise<string> {
         return bcrypt.hash(plain, SALT_ROUNDS);
     }
