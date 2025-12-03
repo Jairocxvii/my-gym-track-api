@@ -20,6 +20,7 @@ export class UsuarioAdapter
     }
 
 
+
     protected toDomain(orm: Usuario): UsuarioEntity {
         const usuario = new UsuarioEntity({
             id: orm.usuario_id,
@@ -72,6 +73,22 @@ export class UsuarioAdapter
 
     protected toColumnName(prop: keyof UsuarioEntity): string {
         return USER_DOMAIN_TO_COLUMN[prop];
+    }
+    async findOneByEmail(mail: string): Promise<UsuarioEntity | null> {
+        var item = await this.repository.findOneBy({ email: mail });
+        if (!item) {
+            return null;
+        }
+        return this.toDomain(item);
+    }
+
+    async updateRefreshToken(id: number, refreshToken: string): Promise<UsuarioEntity | null> {
+        var item = await this.repository.findOneBy({ usuario_id: id });
+        if (!item) {
+            return null;
+        }
+        await this.repository.update({ usuario_id: id }, { refresh_token: refreshToken, updated_at: new Date().toISOString() });
+        return this.toDomain(item);
     }
 }
 

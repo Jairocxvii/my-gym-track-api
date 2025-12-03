@@ -5,6 +5,7 @@ import { UsuarioCreateDto } from '../dtos/usuario-create.dto';
 import { UsuarioEntity } from 'src/usuario/domain/entities/usuario.entity';
 import { UsuariosFindQuery } from '../dtos/usuarios-find.query';
 import { HasherService } from '@common/utils/hasher.service';
+import { UsuarioResponseDto } from '../dtos/usuario-response.dto';
 
 @Injectable()
 export class UsuarioService {
@@ -32,21 +33,37 @@ export class UsuarioService {
     return usuarios.map((usuario) => UsuarioApiMapper.toResponse(usuario));
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<UsuarioEntity> {
 
     const usuario = await this.usuarioPort.findOneById(id);
     if (!usuario) {
       throw new Error('Usuario no encontrado');
     }
-    return UsuarioApiMapper.toResponse(usuario);
+    return usuario;
   }
 
-  async update(id: number, updateUserDto: any) {
+  async findByEmail(mail: string): Promise<UsuarioEntity> {
+    const usuario = await this.usuarioPort.findOneByEmail(mail);
+    if (!usuario) {
+      throw new Error('Usuario no encontrado');
+    }
+    return usuario;
+  }
+
+  async updateRefreshToken(id: number, refreshToken: string): Promise<UsuarioResponseDto> {
+    const usuarioActualizado = await this.usuarioPort.updateRefreshToken(id, refreshToken);
+    if (!usuarioActualizado) {
+      throw new Error('Error al actualizar el refresh token');
+    }
+    return UsuarioApiMapper.toResponse(usuarioActualizado);
+  }
+
+  async update(id: number, updateUserDto: any): Promise<UsuarioResponseDto> {
     const usuarioActualizado = await this.usuarioPort.update(id, updateUserDto);
     return UsuarioApiMapper.toResponse(usuarioActualizado);
   }
 
-  async delete(id: number) {
+  async delete(id: number): Promise<string> {
     const usuario = await this.usuarioPort.findOneById(id);
     if (!usuario) {
       throw new Error('Usuario no encontrado');
