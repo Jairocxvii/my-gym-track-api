@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { UsuarioService } from '../../application/services/usuario.service';
 import { ProgresoService } from '../../application/services/progreso.service';
 import { FindUsuariosDto } from '../dto/find-usuarios.dto';
@@ -6,6 +6,7 @@ import { UpdateUserDto } from 'src/usuario/application/dtos/usuario-update.dto';
 import { UsuarioCreateDto } from 'src/usuario/application/dtos/usuario-create.dto';
 import { UsuariosFindQuery } from '../../application/dtos/usuarios-find.query';
 import { ProgresoCreateDto } from 'src/usuario/application/dtos/progreso-create.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 
 @Controller('usuario')
@@ -19,6 +20,7 @@ export class UsuarioController {
   }
 
   @Post('progreso')
+  @UseGuards(AuthGuard('jwt'))
   createProgress(@Body() createUserDto: ProgresoCreateDto) {
     return this.ProgresoService.create(createUserDto);
   }
