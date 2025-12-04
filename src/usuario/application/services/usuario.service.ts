@@ -50,12 +50,11 @@ export class UsuarioService {
     return usuario;
   }
 
-  async updateRefreshToken(id: number, refreshToken: string): Promise<UsuarioResponseDto> {
+  async updateRefreshToken(id: number, refreshToken: string): Promise<void> {
     const usuarioActualizado = await this.usuarioPort.updateRefreshToken(id, refreshToken);
     if (!usuarioActualizado) {
       throw new Error('Error al actualizar el refresh token');
     }
-    return UsuarioApiMapper.toResponse(usuarioActualizado);
   }
 
   async update(id: number, updateUserDto: any): Promise<UsuarioResponseDto> {

@@ -2,11 +2,15 @@ import { forwardRef, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from './application/strategies/jwt.strategy';
+import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
 import { AuthController } from './infrastructure/controllers/auth.controller';
 import { AuthService } from './application/services/auth.service';
 import { CommonModule } from '@common/common.module';
 import { UsuarioModule } from 'src/usuario/usuario.module';
+import { TokenServicesAdapter } from './infrastructure/adapters/token-services.adapter';
+import { TokenServicesPort } from './domain/ports/token-services.port';
+import { AuthUsuarioRepositoryAdapter } from './infrastructure/adapters/auth-usuario-repository.adapter';
+import { AuthUsuarioRepositoryPort } from './domain/ports/auth-usuario-repository.port';
 @Module({
   imports: [CommonModule,
 
@@ -24,7 +28,16 @@ import { UsuarioModule } from 'src/usuario/usuario.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [JwtStrategy, AuthService],
+  providers: [JwtStrategy, AuthService,
+    {
+      provide: TokenServicesPort,
+      useClass: TokenServicesAdapter,
+    },
+    {
+      provide: AuthUsuarioRepositoryPort,
+      useClass: AuthUsuarioRepositoryAdapter,
+    }
+  ],
   exports: [PassportModule, JwtModule],
 })
 export class AuthModule { }
