@@ -6,7 +6,8 @@ import { UpdateUserDto } from 'src/usuario/application/dtos/usuario-update.dto';
 import { UsuarioCreateDto } from 'src/usuario/application/dtos/usuario-create.dto';
 import { UsuariosFindQuery } from '../../application/dtos/usuarios-find.query';
 import { ProgresoCreateDto } from 'src/usuario/application/dtos/progreso-create.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { Auth } from 'src/auth/infrastructure/decorators/auth.decorator';
+import { Roles } from 'src/usuario/domain/interfaces/roles';
 
 
 @Controller('usuario')
@@ -20,7 +21,7 @@ export class UsuarioController {
   }
 
   @Post('progreso')
-  @UseGuards(AuthGuard('jwt'))
+  @Auth(Roles.USUARIO)
   createProgress(@Body() createUserDto: ProgresoCreateDto) {
     return this.ProgresoService.create(createUserDto);
   }

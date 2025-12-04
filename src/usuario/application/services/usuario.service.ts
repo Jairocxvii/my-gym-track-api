@@ -19,7 +19,7 @@ export class UsuarioService {
   async create(createUserDto: UsuarioCreateDto) {
     const usuario = new UsuarioEntity(createUserDto);
     usuario.passwordHash = await this.hasherService.hash(createUserDto.password);
-    usuario.rol = Roles.USER;
+    usuario.rol = Roles.USUARIO;
     const usuarioCreado = await this.usuarioPort.create(usuario);
     return UsuarioApiMapper.toResponse(usuarioCreado);
   }
