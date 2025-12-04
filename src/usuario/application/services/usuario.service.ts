@@ -6,6 +6,7 @@ import { UsuarioEntity } from 'src/usuario/domain/entities/usuario.entity';
 import { UsuariosFindQuery } from '../dtos/usuarios-find.query';
 import { HasherService } from '@common/utils/hasher.service';
 import { UsuarioResponseDto } from '../dtos/usuario-response.dto';
+import { Roles } from 'src/usuario/domain/interfaces/roles';
 
 @Injectable()
 export class UsuarioService {
@@ -18,6 +19,7 @@ export class UsuarioService {
   async create(createUserDto: UsuarioCreateDto) {
     const usuario = new UsuarioEntity(createUserDto);
     usuario.passwordHash = await this.hasherService.hash(createUserDto.password);
+    usuario.rol = Roles.USER;
     const usuarioCreado = await this.usuarioPort.create(usuario);
     return UsuarioApiMapper.toResponse(usuarioCreado);
   }
