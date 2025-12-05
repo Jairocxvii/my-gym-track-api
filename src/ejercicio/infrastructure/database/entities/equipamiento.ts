@@ -1,11 +1,11 @@
 // equipamiento.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity("equipamiento")
+@Entity('equipamiento')
 export class Equipamiento {
-    @PrimaryGeneratedColumn()
-    equipamiento_id: number;
+  @PrimaryGeneratedColumn()
+  equipamiento_id: number;
 
-    @Column({ length: 50, unique: true })
-    descripcion: string;
+  @Column({ length: 50, unique: true })
+  descripcion: string;
 }

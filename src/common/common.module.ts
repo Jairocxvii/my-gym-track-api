@@ -1,10 +1,16 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from './database/database.module';
-import { HasherService } from './utils/hasher.service';
+import { HASHER_PORT } from './domain/ports/hasher.port';
+import { BcryptHasherAdapter } from './infrastructure/adapters/bcrypt-hasher.adapter';
 
 @Module({
-  providers: [HasherService],
+  providers: [
+    {
+      provide: HASHER_PORT,
+      useClass: BcryptHasherAdapter,
+    },
+  ],
   imports: [DatabaseModule],
-  exports: [DatabaseModule, HasherService],
+  exports: [DatabaseModule, HASHER_PORT],
 })
-export class CommonModule { }
+export class CommonModule {}

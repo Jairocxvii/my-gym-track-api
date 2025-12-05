@@ -6,9 +6,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,                // elimina propiedades no declaradas
-      forbidNonWhitelisted: true,     // lanza error si hay extras
-      transform: true,                // ← convierte automáticamente
+      whitelist: true, // elimina propiedades no declaradas
+      forbidNonWhitelisted: true, // lanza error si hay extras
+      transform: true, // ← convierte automáticamente
       transformOptions: {
         enableImplicitConversion: true, // ← "2" → 2, "true" → true
       },

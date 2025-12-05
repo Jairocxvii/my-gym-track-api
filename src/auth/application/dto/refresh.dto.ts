@@ -1,3 +1,3 @@
 export class RefreshDto {
-    refresh_token: string;
+  refresh_token: string;
 }

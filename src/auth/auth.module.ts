@@ -9,11 +9,10 @@ import { CommonModule } from '@common/common.module';
 import { UsuarioModule } from 'src/usuario/usuario.module';
 import { TokenServicesAdapter } from './infrastructure/adapters/token-services.adapter';
 import { TokenServicesPort } from './domain/ports/token-services.port';
-import { AuthUsuarioRepositoryAdapter } from './infrastructure/adapters/auth-usuario-repository.adapter';
-import { AuthUsuarioRepositoryPort } from './domain/ports/auth-usuario-repository.port';
-@Module({
-  imports: [CommonModule,
 
+@Module({
+  imports: [
+    CommonModule,
     forwardRef(() => UsuarioModule),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
@@ -28,15 +27,13 @@ import { AuthUsuarioRepositoryPort } from './domain/ports/auth-usuario-repositor
     }),
   ],
   controllers: [AuthController],
-  providers: [JwtStrategy, AuthService,
+  providers: [
+    JwtStrategy,
+    AuthService,
     {
       provide: TokenServicesPort,
       useClass: TokenServicesAdapter,
     },
-    {
-      provide: AuthUsuarioRepositoryPort,
-      useClass: AuthUsuarioRepositoryAdapter,
-    }
   ],
   exports: [PassportModule, JwtModule],
 })

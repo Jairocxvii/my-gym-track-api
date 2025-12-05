@@ -1,37 +1,38 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { PassportStrategy } from "@nestjs/passport";
-import { ExtractJwt, Strategy } from "passport-jwt";
-import { ConfigService } from "@nestjs/config";
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ConfigService } from '@nestjs/config';
 import { Payload } from '../../application/interfaces/payload.interface';
-import { UsuarioService } from "../../../usuario/application/services/usuario.service";
+import { AuthUsuarioRepositoryPort } from 'src/auth/domain/ports/auth-usuario-repository.port';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor(private configService: ConfigService,
-        private usuarioService: UsuarioService) {
-        const secret = configService.get<string>('JWT_SECRET');
-        if (!secret) {
-            throw new Error('JWT_SECRET is missing');
-        }
-        super({
-            secretOrKey: secret,
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        });
-        console.log('>>> JwtStrategy cargada');
+  constructor(
+    private configService: ConfigService,
+    private authUsuarioRepositoryPort: AuthUsuarioRepositoryPort
+  ) {
+    const secret = configService.get<string>('JWT_SECRET');
+    if (!secret) {
+      throw new Error('JWT_SECRET is missing');
     }
+    super({
+      secretOrKey: secret,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    });
+    console.log('>>> JwtStrategy cargada');
+  }
 
-    async validate(payload: Payload): Promise<any> {
-        console.log('>>> PAYLOAD RECIBIDO:', payload);
-        const { id } = payload;
-        const user = await this.usuarioService.findOne(+id);
-        if (!user)
-            throw new UnauthorizedException('Token not valid');
+  async validate(payload: Payload): Promise<any> {
+    console.log('>>> PAYLOAD RECIBIDO:', payload);
+    const { id } = payload;
+    const user = await this.authUsuarioRepositoryPort.findOne(+id);
+    if (!user) throw new UnauthorizedException('Token not valid');
 
-        // Si el usuario existe pero está inactivo, también lanza una excepción
-        // TO DO
-        /*      if (!user.isActive)
+    // Si el usuario existe pero está inactivo, también lanza una excepción
+    // TO DO
+    /*      if (!user.isActive)
                   throw new UnauthorizedException('User is inactive, talk with an admin');
         */
-        return user;
-    }
+    return user;
+  }
 }

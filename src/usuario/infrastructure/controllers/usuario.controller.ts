@@ -9,11 +9,12 @@ import { ProgresoCreateDto } from 'src/usuario/application/dtos/progreso-create.
 import { Auth } from 'src/auth/infrastructure/decorators/auth.decorator';
 import { Roles } from 'src/usuario/domain/interfaces/roles';
 
-
 @Controller('usuario')
 export class UsuarioController {
-  constructor(private readonly UsuarioService: UsuarioService,
-    private readonly ProgresoService: ProgresoService) { }
+  constructor(
+    private readonly UsuarioService: UsuarioService,
+    private readonly ProgresoService: ProgresoService,
+  ) {}
 
   @Post()
   create(@Body() createUserDto: UsuarioCreateDto) {
@@ -41,7 +42,6 @@ export class UsuarioController {
   findOne(@Param('id') id: string) {
     return this.UsuarioService.findOne(+id);
   }
-
 
   @Get('progreso/:id')
   findOneProgress(@Param('id') id: string) {
