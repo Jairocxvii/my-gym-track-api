@@ -11,11 +11,11 @@ import { Progreso } from './infrastructure/database/entities/progreso';
 import { PROGRESO_PORT } from './domain/ports/progreso.port';
 import { ProgresoAdapter } from './infrastructure/adapters/progreso.adapter';
 import { CommonModule } from '@common/common.module';
-import { AuthModule } from 'src/auth/auth.module';
-import { AuthUsuarioRepositoryPort } from 'src/auth/domain/ports/auth-usuario-repository.port';
+import { AuthUsuarioRepositoryPort } from '../auth/domain/ports/auth-usuario-repository.port';
 
 @Module({
-  imports: [CommonModule, AuthModule, TypeOrmModule.forFeature([Usuario, Preferencia, Progreso])],
+  imports: [CommonModule,
+    TypeOrmModule.forFeature([Usuario, Preferencia, Progreso])],
   controllers: [UsuarioController],
   providers: [
     UsuarioAdapter,
@@ -36,4 +36,4 @@ import { AuthUsuarioRepositoryPort } from 'src/auth/domain/ports/auth-usuario-re
   ],
   exports: [UsuarioService, AuthUsuarioRepositoryPort],
 })
-export class UsuarioModule {}
+export class UsuarioModule { }

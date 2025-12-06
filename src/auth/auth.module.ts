@@ -13,7 +13,7 @@ import { TokenServicesPort } from './domain/ports/token-services.port';
 @Module({
   imports: [
     CommonModule,
-    forwardRef(() => UsuarioModule),
+    UsuarioModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

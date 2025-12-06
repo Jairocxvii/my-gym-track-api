@@ -1,20 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { UsuarioService } from '../../application/services/usuario.service';
 import { ProgresoService } from '../../application/services/progreso.service';
 import { FindUsuariosDto } from '../dto/find-usuarios.dto';
-import { UpdateUserDto } from 'src/usuario/application/dtos/usuario-update.dto';
-import { UsuarioCreateDto } from 'src/usuario/application/dtos/usuario-create.dto';
+import { UpdateUserDto } from '../../application/dtos/usuario-update.dto';
+import { UsuarioCreateDto } from '../../application/dtos/usuario-create.dto';
 import { UsuariosFindQuery } from '../../application/dtos/usuarios-find.query';
-import { ProgresoCreateDto } from 'src/usuario/application/dtos/progreso-create.dto';
-import { Auth } from 'src/auth/infrastructure/decorators/auth.decorator';
-import { Roles } from 'src/usuario/domain/interfaces/roles';
+import { ProgresoCreateDto } from '../../application/dtos/progreso-create.dto';
+import { Auth } from '../../../auth/infrastructure/decorators/auth.decorator';
+import { Roles } from '../../domain/interfaces/roles';
 
 @Controller('usuario')
 export class UsuarioController {
   constructor(
     private readonly UsuarioService: UsuarioService,
     private readonly ProgresoService: ProgresoService,
-  ) {}
+  ) { }
 
   @Post()
   create(@Body() createUserDto: UsuarioCreateDto) {
