@@ -4,20 +4,24 @@ import { UsuarioApiMapper } from '../mappers/usuario-api.mapper';
 import { UsuarioCreateDto } from '../dtos/usuario-create.dto';
 import { UsuarioEntity } from 'src/usuario/domain/entities/usuario.entity';
 import { UsuariosFindQuery } from '../dtos/usuarios-find.query';
-import { HasherService } from '@common/utils/hasher.service';
+import { HasherPort, HASHER_PORT } from '@common/domain/ports/hasher.port';
 import { UsuarioResponseDto } from '../dtos/usuario-response.dto';
+import { Roles } from 'src/usuario/domain/interfaces/roles';
 
 @Injectable()
 export class UsuarioService {
   constructor(
     @Inject(USUARIO_PORT)
     private readonly usuarioPort: UsuarioPort,
-    private readonly hasherService: HasherService,
+    @Inject(HASHER_PORT)
+    private readonly hasherService: HasherPort,
   ) { }
 
   async create(createUserDto: UsuarioCreateDto) {
     const usuario = new UsuarioEntity(createUserDto);
     usuario.passwordHash = await this.hasherService.hash(createUserDto.password);
+    usuario.isActivo = true;
+    usuario.rol = Roles.USUARIO;
     const usuarioCreado = await this.usuarioPort.create(usuario);
     return UsuarioApiMapper.toResponse(usuarioCreado);
   }
@@ -34,7 +38,6 @@ export class UsuarioService {
   }
 
   async findOne(id: number): Promise<UsuarioEntity> {
-
     const usuario = await this.usuarioPort.findOneById(id);
     if (!usuario) {
       throw new Error('Usuario no encontrado');
@@ -50,12 +53,8 @@ export class UsuarioService {
     return usuario;
   }
 
-  async updateRefreshToken(id: number, refreshToken: string): Promise<UsuarioResponseDto> {
-    const usuarioActualizado = await this.usuarioPort.updateRefreshToken(id, refreshToken);
-    if (!usuarioActualizado) {
-      throw new Error('Error al actualizar el refresh token');
-    }
-    return UsuarioApiMapper.toResponse(usuarioActualizado);
+  async updateRefreshToken(id: number, refreshToken: string): Promise<void> {
+    await this.usuarioPort.updateRefreshToken(id, refreshToken);
   }
 
   async update(id: number, updateUserDto: any): Promise<UsuarioResponseDto> {
@@ -70,6 +69,6 @@ export class UsuarioService {
     }
     usuario.isDeleted = true;
     await this.usuarioPort.update(id, usuario);
-    return "Usuario eliminado correctamente";
+    return 'Usuario eliminado correctamente';
   }
 }

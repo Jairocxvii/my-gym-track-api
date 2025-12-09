@@ -1,6 +1,6 @@
 export interface UsuariosFindQuery {
-    email?: string;
-    isDeleted?: boolean;
-    limit?: number;
-    offset?: number;
+  email?: string;
+  isDeleted?: boolean;
+  limit?: number;
+  offset?: number;
 }

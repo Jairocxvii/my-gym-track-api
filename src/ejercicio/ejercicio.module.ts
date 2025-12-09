@@ -6,7 +6,6 @@ import { EjercicioEquipamiento } from './infrastructure/database/entities/ejerci
 @Module({
   imports: [TypeOrmModule.forFeature([Ejercicio, Equipamiento, EjercicioEquipamiento])],
   controllers: [],
-  providers: [
-  ],
+  providers: [],
 })
-export class EjercicioModule { }
+export class EjercicioModule {}

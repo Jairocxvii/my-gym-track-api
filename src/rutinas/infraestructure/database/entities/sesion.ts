@@ -3,21 +3,21 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Unique } 
 import { Rutina } from './rutina';
 import { SesionEjercicio } from './sesion-ejercicio';
 
-@Entity("sesion")
+@Entity('sesion')
 @Unique(['rutina', 'dia_orden'])
 export class Sesion {
-    @PrimaryGeneratedColumn()
-    sesion_id: number;
+  @PrimaryGeneratedColumn()
+  sesion_id: number;
 
-    @ManyToOne(() => Rutina, (r) => r.sesiones)
-    rutina: Rutina;
+  @ManyToOne(() => Rutina, (r) => r.sesiones)
+  rutina: Rutina;
 
-    @Column({ length: 100, nullable: true })
-    nombre: string;
+  @Column({ length: 100, nullable: true })
+  nombre: string;
 
-    @Column()
-    dia_orden: number;
+  @Column()
+  dia_orden: number;
 
-    @OneToMany(() => SesionEjercicio, (se) => se.sesion)
-    ejercicios: SesionEjercicio[];
+  @OneToMany(() => SesionEjercicio, (se) => se.sesion)
+  ejercicios: SesionEjercicio[];
 }

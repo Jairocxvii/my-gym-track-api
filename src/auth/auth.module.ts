@@ -2,15 +2,18 @@ import { forwardRef, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from './application/strategies/jwt.strategy';
+import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
 import { AuthController } from './infrastructure/controllers/auth.controller';
 import { AuthService } from './application/services/auth.service';
 import { CommonModule } from '@common/common.module';
 import { UsuarioModule } from 'src/usuario/usuario.module';
-@Module({
-  imports: [CommonModule,
+import { TokenServicesAdapter } from './infrastructure/adapters/token-services.adapter';
+import { TokenServicesPort } from './domain/ports/token-services.port';
 
-    forwardRef(() => UsuarioModule),
+@Module({
+  imports: [
+    CommonModule,
+    UsuarioModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -24,7 +27,14 @@ import { UsuarioModule } from 'src/usuario/usuario.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [JwtStrategy, AuthService],
+  providers: [
+    JwtStrategy,
+    AuthService,
+    {
+      provide: TokenServicesPort,
+      useClass: TokenServicesAdapter,
+    },
+  ],
   exports: [PassportModule, JwtModule],
 })
 export class AuthModule { }
