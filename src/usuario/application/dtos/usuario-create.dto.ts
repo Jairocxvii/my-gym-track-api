@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Max, Min, MinLength } from 'class-validator';
+import { IsBoolean, IsEmail, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Max, Min, MinLength } from 'class-validator';
 
 export class UsuarioCreateDto {
   @IsString({ message: 'nombre debe ser texto' })
@@ -45,4 +45,8 @@ export class UsuarioCreateDto {
   @IsOptional()
   @IsString({ message: 'objetivos debe ser texto' })
   objetivos?: string;
+
+  @IsOptional()
+  @IsBoolean({ message: 'isActivo debe ser booleano' })
+  isActivo?: boolean;
 }

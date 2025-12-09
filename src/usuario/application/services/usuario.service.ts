@@ -15,11 +15,12 @@ export class UsuarioService {
     private readonly usuarioPort: UsuarioPort,
     @Inject(HASHER_PORT)
     private readonly hasherService: HasherPort,
-  ) {}
+  ) { }
 
   async create(createUserDto: UsuarioCreateDto) {
     const usuario = new UsuarioEntity(createUserDto);
     usuario.passwordHash = await this.hasherService.hash(createUserDto.password);
+    usuario.isActivo = true;
     usuario.rol = Roles.USUARIO;
     const usuarioCreado = await this.usuarioPort.create(usuario);
     return UsuarioApiMapper.toResponse(usuarioCreado);

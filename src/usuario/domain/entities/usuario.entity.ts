@@ -12,6 +12,7 @@ export class UsuarioEntity {
   rol: string;
   habeasDataAceptado: boolean;
   isDeleted: boolean;
+  isActivo: boolean;
   condicionesMedicas?: string;
   objetivos?: string;
   refreshToken?: string;

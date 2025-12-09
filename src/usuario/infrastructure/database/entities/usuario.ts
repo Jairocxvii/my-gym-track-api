@@ -61,6 +61,9 @@ export class Usuario {
   @Column({ type: 'boolean', default: false })
   is_deleted: boolean;
 
+  @Column({ type: 'boolean', default: true })
+  is_activo: boolean;
+
   @Column({ type: 'timestamptz', nullable: true })
   deleted_at: Date;
 

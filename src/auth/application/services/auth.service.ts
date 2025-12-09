@@ -20,8 +20,7 @@ export class AuthService {
     const usuario = await this.authUsuarioRepositoryPort.findByEmail(email);
 
     if (!usuario) throw new UnauthorizedException('Invalid credentials');
-    //TO DO
-    //if (!usuario.isActive) throw new UnauthorizedException('User inactive');
+    if (!usuario.isActivo) throw new UnauthorizedException('User inactive');
 
     const isValid = await this.hasherService.compare(password, usuario.passwordHash);
     if (!isValid) throw new UnauthorizedException('Invalid credentials');
@@ -44,9 +43,8 @@ export class AuthService {
       // TO DO VAlidar refresh token con BD
 
       if (!usuario) throw new UnauthorizedException('Invalid refresh token');
-      //TO DO
-      /*if (!usuario.isActive)
-                throw new UnauthorizedException('User inactive');*/
+      if (!usuario.isActivo)
+        throw new UnauthorizedException('User inactive');
 
       //TO DO
 

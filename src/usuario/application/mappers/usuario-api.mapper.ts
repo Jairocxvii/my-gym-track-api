@@ -15,6 +15,7 @@ export class UsuarioApiMapper {
       celular: domain.celular,
       condicionesMedicas: domain.condicionesMedicas,
       objetivos: domain.objetivos,
+      isActivo: domain.isActivo,
       creadoEn: domain.createdAt,
       actualizadoEn: domain.updatedAt,
     };

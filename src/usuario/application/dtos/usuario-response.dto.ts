@@ -11,6 +11,7 @@ export class UsuarioResponseDto {
 
   condicionesMedicas?: string;
   objetivos?: string;
+  isActivo: boolean;
 
   creadoEn?: Date;
   actualizadoEn?: Date;
