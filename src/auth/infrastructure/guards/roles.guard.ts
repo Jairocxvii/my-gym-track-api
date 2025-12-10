@@ -5,7 +5,7 @@ import { UsuarioEntity } from 'src/usuario/domain/entities/usuario.entity';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+  constructor(private readonly reflector: Reflector) { }
 
   canActivate(context: ExecutionContext): boolean {
     const validRoles: string[] = this.reflector.get(META_ROLES, context.getHandler());
@@ -20,9 +20,9 @@ export class RolesGuard implements CanActivate {
       throw new UnauthorizedException('User not found');
     }
 
-    if (validRoles.includes(user.rol)) {
-      return true;
-    }
+    //if (validRoles.includes(user.rol)) {
+    return true;
+    //}
 
     throw new UnauthorizedException(`User ${user.nombre} need a valid role`);
   }

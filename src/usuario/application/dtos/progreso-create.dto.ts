@@ -1,8 +1,6 @@
 import { IsInt, IsOptional, IsDateString, IsNumber, Min, IsObject, IsString, IsDate } from 'class-validator';
 
 export class ProgresoCreateDto {
-  @IsInt({ message: 'usuario_id debe ser un número entero' })
-  usuarioId!: number;
 
   @IsOptional()
   @IsDate({ message: 'fecha debe ser una fecha válida (YYYY-MM-DD)' })
