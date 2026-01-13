@@ -1,0 +1,379 @@
+{
+	"info": {
+		"_postman_id": "82bb98e5-09f2-44e3-9200-847428c789ee",
+		"name": "Gym TRack",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36846443"
+	},
+	"item": [
+		{
+			"name": "usuarios",
+			"item": [
+				{
+					"name": "usuarios",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\":\"carro nuevo con perro\",\r\n    \"price\":2000,\r\n    \"description\":    \"description\",\r\n\r\n    \"stock\":3,\r\n    \"sizes\":[\"xl\"],\r\n    \"gender\":\"men\",\r\n    \"tags\":[\"hombre mayor\"]\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/usuario?limit=1&offset=7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"usuario"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "1"
+								},
+								{
+									"key": "offset",
+									"value": "7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "usuario",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\":\"carro nuevo con perro\",\r\n    \"price\":2000,\r\n    \"description\":    \"description\",\r\n\r\n    \"stock\":3,\r\n    \"sizes\":[\"xl\"],\r\n    \"gender\":\"men\",\r\n    \"tags\":[\"hombre mayor\"]\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/usuario/14",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"usuario",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Juan sPérez\",\r\n  \"edad\": 28,\r\n  \"sexo\": \"M\",\r\n  \"pesoKg\": 75.5,\r\n  \"alturaCm\": 178,\r\n  \"nivel\": \"intermedio\",\r\n  \"email\": \"perez.sossa@example.com\",\r\n  \"celular\": \"+521234567890\",\r\n  \"password\": \"MiContraseñas123!\",\r\n  \"condicionesMedicas\": \"Hipertensión leve\",\r\n  \"objetivos\": \"Bajar 5 kg y ganar resistencia\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/usuario",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"usuario"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Juan Pérez\",\r\n  \"edad\": 28,\r\n  \"sexo\": \"M\",\r\n  \"pesoKg\": 75.5,\r\n  \"alturaCm\": 178,\r\n  \"nivel\": \"bajo\",\r\n  \"email\": \"juan.perez@example.com\",\r\n  \"celular\": \"+521234567890\",\r\n  \"password\": \"MiContraseña123!\",\r\n  \"condicionesMedicas\": \"Hipertensión leve\",\r\n  \"objetivos\": \"Bajar 5 kg y ganar resistencia\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/usuario/14",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"usuario",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/usuario/14",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"usuario",
+								"14"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "progreso",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{bodyToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Bearer",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE4IiwiZW1haWwiOiJwZXJlei5zb3NzYUBleGFtcGxlLmNvbSIsIm5hbWUiOiJKdWFuIHNQw6lyZXoiLCJyb2xlIjoidXN1YXJpbyIsImlhdCI6MTc2NDg4MzAyNiwiZXhwIjoxNzY0ODg0MjI2fQ.PhkPmwoA2_6tU32TY1ZV58IZ1O7SwX1zdb1nzf4mzns",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n  \"fecha\": \"2025-06-02\",\r\n  \"pesoKg\": 75.45,\r\n  \"medidas\": {\r\n    \"cintura\": 85,\r\n    \"pecho\": 100,\r\n    \"brazo\": 35.5\r\n  },\r\n  \"notas\": \"Primera semana del plan de volumen\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/usuario/progreso",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"usuario",
+								"progreso"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "progreso",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"usuarioId\": 42,\r\n  \"fecha\": \"2025-06-02\",\r\n  \"pesoKg\": 75.45,\r\n  \"medidas\": {\r\n    \"cintura\": 85,\r\n    \"pecho\": 100,\r\n    \"brazo\": 35.5\r\n  },\r\n  \"notas\": \"Primera semana del plan de volumen\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/usuario/progreso/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"usuario",
+								"progreso",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "login",
+			"item": [
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();\r",
+									"var bodyToken = responseJson.token;\r",
+									"pm.environment.set(\"bodyToken\", bodyToken)"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"perez.sossa@example.com\",\r\n  \"password\": \"MiContraseñas123!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "verify",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();\r",
+									"var bodyToken = responseJson.token;\r",
+									"pm.environment.set(\"bodyToken\", bodyToken)"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"perez.sossa@example.com\",\r\n  \"password\": \"MiContraseñas123!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();\r",
+									"var bodyToken = responseJson.token;\r",
+									"pm.environment.set(\"bodyToken\", bodyToken)"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"perez.sossa@example.com\",\r\n  \"password\": \"MiContraseñas123!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

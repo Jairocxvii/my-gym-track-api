@@ -63,4 +63,18 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
+  async verifyToken(token: string) {
+    try {
+      const payload = this.tokenServices.verifyToken(token);
+      if (!payload) throw new UnauthorizedException('Invalid token');
+      /*const usuario = await this.authUsuarioRepositoryPort.findOne(parseInt(payload.id));
+      if (!usuario) throw new UnauthorizedException('Invalid token');
+      if (!usuario.isActivo)
+        throw new UnauthorizedException('User inactive');*/
+      return true;
+    } catch (error) {
+      console.log(error);
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
 }

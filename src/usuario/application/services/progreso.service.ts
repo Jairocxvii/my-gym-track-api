@@ -3,17 +3,17 @@ import { PROGRESO_PORT, ProgresoPort } from '../../domain/ports/progreso.port';
 import { ProgresoApiMapper } from '../mappers/progreso-api.mapper';
 import { ProgresoCreateDto } from '../dtos/progreso-create.dto';
 import { ProgresoEntity } from '../../domain/entities/progreso.entity';
-//import { ProgresosFindDto } from '../dtos/progresos-find.dto';
 
 @Injectable()
 export class ProgresoService {
   constructor(
     @Inject(PROGRESO_PORT)
     private readonly progresoPort: ProgresoPort,
-  ) {}
+  ) { }
 
-  async create(createProgresoDto: ProgresoCreateDto) {
+  async create(createProgresoDto: ProgresoCreateDto, usuarioId: number) {
     const progreso = new ProgresoEntity(createProgresoDto);
+    progreso.usuarioId = usuarioId;
     const progresoCreado = await this.progresoPort.create(progreso);
     return ProgresoApiMapper.toResponse(progresoCreado);
   }

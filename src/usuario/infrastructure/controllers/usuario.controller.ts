@@ -8,6 +8,8 @@ import { UsuariosFindQuery } from '../../application/dtos/usuarios-find.query';
 import { ProgresoCreateDto } from '../../application/dtos/progreso-create.dto';
 import { Auth } from '../../../auth/infrastructure/decorators/auth.decorator';
 import { Roles } from '../../domain/interfaces/roles';
+import { User } from 'src/auth/infrastructure/decorators/user.decorator';
+import { UsuarioEntity } from 'src/usuario/domain/entities/usuario.entity';
 
 @Controller('usuario')
 export class UsuarioController {
@@ -23,8 +25,8 @@ export class UsuarioController {
 
   @Post('progreso')
   @Auth(Roles.USUARIO)
-  createProgress(@Body() createUserDto: ProgresoCreateDto) {
-    return this.ProgresoService.create(createUserDto);
+  createProgress(@User() user: UsuarioEntity, @Body() createUserDto: ProgresoCreateDto) {
+    return this.ProgresoService.create(createUserDto, user.id);
   }
 
   @Get()

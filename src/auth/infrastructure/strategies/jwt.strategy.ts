@@ -19,20 +19,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: secret,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
-    console.log('>>> JwtStrategy cargada');
   }
 
   async validate(payload: Payload): Promise<any> {
-    console.log('>>> PAYLOAD RECIBIDO:', payload);
     const { id } = payload;
     const user = await this.authUsuarioRepositoryPort.findOne(+id);
     if (!user) throw new UnauthorizedException('Token not valid');
+    if (!user.isActivo)
+      throw new UnauthorizedException('User is inactive, talk with an admin');
 
-    // Si el usuario existe pero está inactivo, también lanza una excepción
-    // TO DO
-    /*      if (!user.isActive)
-                  throw new UnauthorizedException('User is inactive, talk with an admin');
-        */
     return user;
   }
 }
