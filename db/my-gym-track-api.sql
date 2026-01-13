@@ -1,0 +1,310 @@
+-- Table Definition
+CREATE TABLE "public"."ejercicio_equipamiento" (
+    "ejercicio_id" int4 NOT NULL,
+    "equipamiento_id" int4 NOT NULL,
+    CONSTRAINT "ejercicio_equipamiento_ejercicio_id_fkey" FOREIGN KEY ("ejercicio_id") REFERENCES "public"."ejercicio"("ejercicio_id"),
+    CONSTRAINT "ejercicio_equipamiento_equipamiento_id_fkey" FOREIGN KEY ("equipamiento_id") REFERENCES "public"."equipamiento"("equipamiento_id"),
+    PRIMARY KEY ("ejercicio_id","equipamiento_id")
+);
+
+-- Sequence and defined type
+CREATE SEQUENCE IF NOT EXISTS equipamiento_equipamiento_id_seq;
+
+-- Table Definition
+CREATE TABLE "public"."equipamiento" (
+    "equipamiento_id" int4 NOT NULL DEFAULT nextval('equipamiento_equipamiento_id_seq'::regclass),
+    "descripcion" varchar(50) NOT NULL,
+    PRIMARY KEY ("equipamiento_id")
+);
+
+
+-- Indices
+CREATE UNIQUE INDEX equipamiento_descripcion_key ON public.equipamiento USING btree (descripcion);
+
+-- Sequence and defined type
+CREATE SEQUENCE IF NOT EXISTS preferencia_preferencia_id_seq;
+
+-- Table Definition
+CREATE TABLE "public"."preferencia" (
+    "preferencia_id" int4 NOT NULL DEFAULT nextval('preferencia_preferencia_id_seq'::regclass),
+    "usuario_id" int4,
+    "ejercicios_favoritos" text,
+    "ejercicios_a_evitar" text,
+    CONSTRAINT "preferencia_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuario"("usuario_id"),
+    PRIMARY KEY ("preferencia_id")
+);
+
+
+-- Indices
+CREATE UNIQUE INDEX preferencia_usuario_id_key ON public.preferencia USING btree (usuario_id);
+
+-- Sequence and defined type
+CREATE SEQUENCE IF NOT EXISTS rutina_rutina_id_seq;
+
+-- Table Definition
+CREATE TABLE "public"."rutina" (
+    "rutina_id" int4 NOT NULL DEFAULT nextval('rutina_rutina_id_seq'::regclass),
+    "usuario_id" int4,
+    "nombre" varchar(100),
+    "fecha_creacion" date DEFAULT CURRENT_DATE,
+    "tipo_division" varchar(50),
+    CONSTRAINT "rutina_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuario"("usuario_id"),
+    PRIMARY KEY ("rutina_id")
+);
+
+-- Sequence and defined type
+CREATE SEQUENCE IF NOT EXISTS sesion_sesion_id_seq;
+
+-- Table Definition
+CREATE TABLE "public"."sesion" (
+    "sesion_id" int4 NOT NULL DEFAULT nextval('sesion_sesion_id_seq'::regclass),
+    "rutina_id" int4,
+    "nombre" varchar(100),
+    "dia_orden" int2,
+    CONSTRAINT "sesion_rutina_id_fkey" FOREIGN KEY ("rutina_id") REFERENCES "public"."rutina"("rutina_id"),
+    PRIMARY KEY ("sesion_id")
+);
+
+
+-- Indices
+CREATE UNIQUE INDEX sesion_rutina_orden_uk ON public.sesion USING btree (rutina_id, dia_orden);
+
+-- Sequence and defined type
+CREATE SEQUENCE IF NOT EXISTS sesion_ejercicio_sesion_ejercicio_id_seq;
+
+-- Table Definition
+CREATE TABLE "public"."sesion_ejercicio" (
+    "sesion_ejercicio_id" int4 NOT NULL DEFAULT nextval('sesion_ejercicio_sesion_ejercicio_id_seq'::regclass),
+    "sesion_id" int4,
+    "ejercicio_id" int4,
+    "orden" int2,
+    "series" int2,
+    "repeticiones" int2,
+    "descanso_seg" int2,
+    CONSTRAINT "sesion_ejercicio_ejercicio_id_fkey" FOREIGN KEY ("ejercicio_id") REFERENCES "public"."ejercicio"("ejercicio_id"),
+    CONSTRAINT "sesion_ejercicio_sesion_id_fkey" FOREIGN KEY ("sesion_id") REFERENCES "public"."sesion"("sesion_id"),
+    PRIMARY KEY ("sesion_ejercicio_id")
+);
+
+
+-- Indices
+CREATE UNIQUE INDEX sesion_ejercicio_orden_uk ON public.sesion_ejercicio USING btree (sesion_id, orden);
+
+-- Sequence and defined type
+CREATE SEQUENCE IF NOT EXISTS ejercicio_ejercicio_id_seq;
+
+-- Table Definition
+CREATE TABLE "public"."ejercicio" (
+    "ejercicio_id" int4 NOT NULL DEFAULT nextval('ejercicio_ejercicio_id_seq'::regclass),
+    "nombre" varchar(100) NOT NULL,
+    "categoria" varchar(50),
+    "musculo_principal" varchar(100),
+    PRIMARY KEY ("ejercicio_id")
+);
+
+-- Sequence and defined type
+CREATE SEQUENCE IF NOT EXISTS progreso_progreso_id_seq;
+
+-- Table Definition
+CREATE TABLE "public"."progreso" (
+    "progreso_id" int4 NOT NULL DEFAULT nextval('progreso_progreso_id_seq'::regclass),
+    "usuario_id" int4,
+    "fecha" date DEFAULT CURRENT_DATE,
+    "peso_kg" numeric(5,2),
+    "medidas" jsonb,
+    "notas" text,
+    "created_at" timestamptz DEFAULT now(),
+    CONSTRAINT "progreso_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuario"("usuario_id"),
+    PRIMARY KEY ("progreso_id")
+);
+
+-- Sequence and defined type
+CREATE SEQUENCE IF NOT EXISTS registro_entrenamiento_registro_id_seq;
+
+-- Table Definition
+CREATE TABLE "public"."registro_entrenamiento" (
+    "registro_id" int4 NOT NULL DEFAULT nextval('registro_entrenamiento_registro_id_seq'::regclass),
+    "usuario_id" int4,
+    "sesion_id" int4,
+    "sesion_ejercicio_id" int4,
+    "fecha" date DEFAULT CURRENT_DATE,
+    "series_realizadas" int2,
+    "repeticiones_realizadas" int2,
+    "peso_utilizado_kg" numeric(6,2),
+    CONSTRAINT "registro_entrenamiento_sesion_ejercicio_id_fkey" FOREIGN KEY ("sesion_ejercicio_id") REFERENCES "public"."sesion_ejercicio"("sesion_ejercicio_id"),
+    CONSTRAINT "registro_entrenamiento_sesion_id_fkey" FOREIGN KEY ("sesion_id") REFERENCES "public"."sesion"("sesion_id"),
+    CONSTRAINT "registro_entrenamiento_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuario"("usuario_id"),
+    PRIMARY KEY ("registro_id")
+);
+
+-- Sequence and defined type
+CREATE SEQUENCE IF NOT EXISTS usuario_usuario_id_seq;
+
+-- Table Definition
+CREATE TABLE "public"."usuario" (
+    "usuario_id" int4 NOT NULL DEFAULT nextval('usuario_usuario_id_seq'::regclass),
+    "nombre" varchar(100) NOT NULL,
+    "edad" int2 NOT NULL,
+    "sexo" bpchar(1) NOT NULL,
+    "peso_kg" numeric(5,2) NOT NULL,
+    "altura_cm" numeric(5,2) NOT NULL,
+    "nivel" varchar(20) NOT NULL,
+    "condiciones_medicas" text,
+    "objetivos" text,
+    "created_at" timestamptz DEFAULT now(),
+    "updated_at" timestamptz DEFAULT now(),
+    "email" varchar(150) NOT NULL,
+    "celular" varchar(20),
+    "password_hash" varchar(255) NOT NULL,
+    "refresh_token" varchar(500),
+    "rol" varchar(50) NOT NULL DEFAULT 'usuario'::character varying,
+    "habeas_data_aceptado" bool NOT NULL DEFAULT false,
+    "fecha_habeas_data" timestamptz,
+    "is_deleted" bool NOT NULL DEFAULT false,
+    "deleted_at" timestamptz,
+    "is_activo" bool,
+    PRIMARY KEY ("usuario_id")
+);
+
+
+-- Indices
+CREATE UNIQUE INDEX usuario_email_key ON public.usuario USING btree (email);
+
+
+
+
+
+
+
+INSERT INTO "public"."ejercicio" ("ejercicio_id", "nombre", "categoria", "musculo_principal") VALUES
+(1, 'Press de banca plano', 'Pecho', 'Pectoral mayor'),
+(2, 'Press de banca inclinado', 'Pecho', 'Pectoral superior'),
+(3, 'Press de banca declinado', 'Pecho', 'Pectoral inferior'),
+(4, 'Aperturas con mancuernas', 'Pecho', 'Pectoral mayor'),
+(5, 'Aperturas en banco inclinado', 'Pecho', 'Pectoral superior'),
+(6, 'Fondos en paralelas', 'Pecho', 'Pectoral inferior'),
+(7, 'Press con mancuernas', 'Pecho', 'Pectoral mayor'),
+(8, 'Cruces en polea', 'Pecho', 'Pectoral mayor'),
+(9, 'Flexiones', 'Pecho', 'Pectoral mayor'),
+(10, 'Pullover con mancuerna', 'Pecho', 'Pectoral mayor'),
+(11, 'Dominadas', 'Espalda', 'Dorsal ancho'),
+(12, 'Remo con barra', 'Espalda', 'Dorsal ancho'),
+(13, 'Remo con mancuerna', 'Espalda', 'Dorsal ancho'),
+(14, 'Peso muerto', 'Espalda', 'Erector espinal'),
+(15, 'Jalón al pecho', 'Espalda', 'Dorsal ancho'),
+(16, 'Jalón con agarre cerrado', 'Espalda', 'Dorsal ancho'),
+(17, 'Remo en polea baja', 'Espalda', 'Dorsal medio'),
+(18, 'Remo en T', 'Espalda', 'Dorsal ancho'),
+(19, 'Pullover en polea', 'Espalda', 'Dorsal ancho'),
+(20, 'Face pull', 'Espalda', 'Trapecio medio'),
+(21, 'Encogimientos de hombros', 'Espalda', 'Trapecio superior'),
+(22, 'Hiperextensiones', 'Espalda', 'Erector espinal'),
+(23, 'Press militar', 'Hombros', 'Deltoides anterior'),
+(24, 'Press con mancuernas', 'Hombros', 'Deltoides'),
+(25, 'Elevaciones laterales', 'Hombros', 'Deltoides lateral'),
+(26, 'Elevaciones frontales', 'Hombros', 'Deltoides anterior'),
+(27, 'Pájaros', 'Hombros', 'Deltoides posterior'),
+(28, 'Remo al mentón', 'Hombros', 'Deltoides lateral'),
+(29, 'Press Arnold', 'Hombros', 'Deltoides'),
+(30, 'Elevaciones posteriores', 'Hombros', 'Deltoides posterior'),
+(31, 'Curl con barra', 'Bíceps', 'Bíceps braquial'),
+(32, 'Curl con mancuernas', 'Bíceps', 'Bíceps braquial'),
+(33, 'Curl martillo', 'Bíceps', 'Braquial'),
+(34, 'Curl concentrado', 'Bíceps', 'Bíceps braquial'),
+(35, 'Curl en banco Scott', 'Bíceps', 'Bíceps braquial'),
+(36, 'Curl en polea', 'Bíceps', 'Bíceps braquial'),
+(37, 'Curl 21', 'Bíceps', 'Bíceps braquial'),
+(38, 'Curl alterno', 'Bíceps', 'Bíceps braquial'),
+(39, 'Press francés', 'Tríceps', 'Tríceps'),
+(40, 'Fondos entre bancos', 'Tríceps', 'Tríceps'),
+(41, 'Extensiones en polea', 'Tríceps', 'Tríceps'),
+(42, 'Patada de tríceps', 'Tríceps', 'Tríceps'),
+(43, 'Press cerrado', 'Tríceps', 'Tríceps'),
+(44, 'Extensiones sobre cabeza', 'Tríceps', 'Tríceps'),
+(45, 'Extensiones con cuerda', 'Tríceps', 'Tríceps'),
+(46, 'Sentadilla', 'Piernas', 'Cuádriceps'),
+(47, 'Sentadilla frontal', 'Piernas', 'Cuádriceps'),
+(48, 'Prensa de piernas', 'Piernas', 'Cuádriceps'),
+(49, 'Extensiones de cuádriceps', 'Piernas', 'Cuádriceps'),
+(50, 'Zancadas', 'Piernas', 'Cuádriceps'),
+(51, 'Step ups', 'Piernas', 'Cuádriceps'),
+(52, 'Sentadilla búlgara', 'Piernas', 'Cuádriceps'),
+(53, 'Hack squat', 'Piernas', 'Cuádriceps'),
+(54, 'Sentadilla sumo', 'Piernas', 'Cuádriceps'),
+(55, 'Peso muerto rumano', 'Piernas', 'Femorales'),
+(56, 'Curl femoral acostado', 'Piernas', 'Femorales'),
+(57, 'Curl femoral sentado', 'Piernas', 'Femorales'),
+(58, 'Buenos días', 'Piernas', 'Femorales'),
+(59, 'Peso muerto piernas rígidas', 'Piernas', 'Femorales'),
+(60, 'Puente de glúteos', 'Piernas', 'Glúteos'),
+(61, 'Hip thrust', 'Piernas', 'Glúteos'),
+(62, 'Patada de glúteo en polea', 'Piernas', 'Glúteos'),
+(63, 'Abducción de cadera', 'Piernas', 'Glúteo medio'),
+(64, 'Sentadilla profunda', 'Piernas', 'Glúteos'),
+(65, 'Elevaciones de talones de pie', 'Piernas', 'Gemelos'),
+(66, 'Elevaciones de talones sentado', 'Piernas', 'Sóleo'),
+(67, 'Elevaciones en prensa', 'Piernas', 'Gemelos'),
+(68, 'Crunch abdominal', 'Abdominales', 'Recto abdominal'),
+(69, 'Plancha', 'Abdominales', 'Core'),
+(70, 'Elevación de piernas', 'Abdominales', 'Abdomen inferior'),
+(71, 'Abdominales en polea', 'Abdominales', 'Recto abdominal'),
+(72, 'Russian twist', 'Abdominales', 'Oblicuos'),
+(73, 'Plancha lateral', 'Abdominales', 'Oblicuos'),
+(74, 'Mountain climbers', 'Abdominales', 'Core'),
+(75, 'Bicicleta abdominal', 'Abdominales', 'Oblicuos'),
+(76, 'Crunch invertido', 'Abdominales', 'Abdomen inferior'),
+(77, 'Ab wheel', 'Abdominales', 'Core'),
+(78, 'V-ups', 'Abdominales', 'Recto abdominal'),
+(79, 'Dead bug', 'Abdominales', 'Core'),
+(80, 'Caminata', 'Cardio', 'Sistema cardiovascular'),
+(81, 'Trote', 'Cardio', 'Sistema cardiovascular'),
+(82, 'Carrera', 'Cardio', 'Sistema cardiovascular'),
+(83, 'Bicicleta estática', 'Cardio', 'Sistema cardiovascular'),
+(84, 'Elíptica', 'Cardio', 'Sistema cardiovascular'),
+(85, 'Remo ergómetro', 'Cardio', 'Sistema cardiovascular'),
+(86, 'Saltar la cuerda', 'Cardio', 'Sistema cardiovascular'),
+(87, 'Burpees', 'Cardio', 'Cuerpo completo'),
+(88, 'Jumping jacks', 'Cardio', 'Sistema cardiovascular'),
+(89, 'Sprint', 'Cardio', 'Sistema cardiovascular'),
+(90, 'Clean and press', 'Funcional', 'Cuerpo completo'),
+(91, 'Thrusters', 'Funcional', 'Cuerpo completo'),
+(92, 'Swing con kettlebell', 'Funcional', 'Cadena posterior'),
+(93, 'Turkish get up', 'Funcional', 'Core'),
+(94, 'Farmer walk', 'Funcional', 'Agarre y core'),
+(95, 'Battle ropes', 'Funcional', 'Cuerpo completo'),
+(96, 'Box jumps', 'Funcional', 'Piernas'),
+(97, 'Wall balls', 'Funcional', 'Cuerpo completo'),
+(98, 'Muscle ups', 'Funcional', 'Espalda y tríceps'),
+(99, 'Handstand push ups', 'Funcional', 'Hombros');
+INSERT INTO "public"."progreso" ("progreso_id", "usuario_id", "fecha", "peso_kg", "medidas", "notas", "created_at") VALUES
+(4, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-11-27 22:38:44.045154+00'),
+(5, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-03 16:23:36.46823+00'),
+(6, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 20:42:14.754811+00'),
+(7, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 20:42:16.302531+00'),
+(8, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 20:53:37.783609+00'),
+(9, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 21:17:52.228997+00'),
+(10, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 21:20:14.390206+00'),
+(11, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 21:23:28.853945+00'),
+(12, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-09 16:40:13.78232+00'),
+(13, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-09 16:46:19.534903+00'),
+(14, 18, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-10 16:10:22.96585+00');
+
+INSERT INTO "public"."usuario" ("usuario_id", "nombre", "edad", "sexo", "peso_kg", "altura_cm", "nivel", "condiciones_medicas", "objetivos", "created_at", "updated_at", "email", "celular", "password_hash", "refresh_token", "rol", "habeas_data_aceptado", "fecha_habeas_data", "is_deleted", "deleted_at", "is_activo") VALUES
+(1, 'Ricardo Silva', 50, 'M', 88.00, 182.00, 'principiante', 'Artrosis en rodilla izquierda', 'Rehabilitación y movilidad', '2025-11-25 02:25:49.767187+00', '2025-11-25 02:25:49.767187+00', 'user1@temp.local', NULL, 'pending', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
+(2, 'Clara Morales', 33, 'F', 64.50, 163.00, 'intermedio', NULL, 'Tonificar piernas y glúteos', '2025-11-25 02:25:52.337595+00', '2025-11-25 02:25:52.337595+00', 'user2@temp.local', NULL, 'pending', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
+(3, 'Ana López', 28, 'F', 62.50, 165.00, 'intermedio', NULL, 'Bajar de peso y tonificar', '2025-11-25 02:25:54.497919+00', '2025-11-25 02:25:54.497919+00', 'user3@temp.local', NULL, 'pending', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
+(4, 'Carlos Méndez', 35, 'M', 78.30, 175.50, 'avanzado', 'Hipertensión controlada', 'Ganar masa muscular', '2025-11-25 02:25:54.566915+00', '2025-11-25 02:25:54.566915+00', 'user4@temp.local', NULL, 'pending', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
+(5, 'Lucía Fernández', 22, 'F', 55.00, 160.00, 'principiante', NULL, 'Mejorar resistencia cardiovascular', '2025-11-25 02:25:54.621019+00', '2025-11-25 02:25:54.621019+00', 'user5@temp.local', NULL, 'pending', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
+(6, 'Jorge Ramírez', 40, 'M', 85.20, 180.00, 'intermedio', 'Diabetes tipo 2', 'Reducir grasa corporal', '2025-11-25 02:25:54.631691+00', '2025-11-25 02:25:54.631691+00', 'user6@temp.local', NULL, 'pending', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
+(7, 'Sofía Torres', 30, 'F', 70.00, 168.00, 'intermedio', 'Escoliosis leve', 'Fortalecer espalda y core', '2025-11-25 02:25:54.637193+00', '2025-11-25 02:25:54.637193+00', 'user7@temp.local', NULL, 'pending', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
+(8, 'Diego Castro', 25, 'M', 74.00, 178.00, 'avanzado', NULL, 'Mantener condición física', '2025-11-25 02:25:54.641523+00', '2025-11-25 02:25:54.641523+00', 'user8@temp.local', NULL, 'pending', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
+(9, 'Valentina Ruiz', 19, 'F', 58.00, 162.00, 'principiante', 'Asma bronquial', 'Bajar 5 kg', '2025-11-25 02:25:54.645834+00', '2025-11-25 02:25:54.645834+00', 'user9@temp.local', NULL, 'pending', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
+(10, 'Miguel Ángel Gómez', 45, 'M', 92.00, 176.00, 'principiante', 'Colesterol alto', 'Mejorar salud general', '2025-11-25 02:25:54.650245+00', '2025-11-25 02:25:54.650245+00', 'user10@temp.local', NULL, 'pending', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
+(11, 'Clara Morales', 33, 'F', 64.50, 163.00, 'intermedio', NULL, 'Tonificar piernas y glúteos', '2025-11-25 02:25:54.655205+00', '2025-11-25 02:25:54.655205+00', 'user11@temp.local', NULL, 'pending', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
+(12, 'Ricardo Silva', 50, 'M', 88.00, 182.00, 'principiante', 'Artrosis en rodilla izquierda', 'Rehabilitación y movilidad', '2025-11-25 02:25:54.6598+00', '2025-11-25 02:25:54.6598+00', 'user12@temp.local', NULL, 'pending', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
+(14, 'Juan Pérez', 28, 'M', 75.50, 178.00, 'bajo', 'Hipertensión leve', 'Bajar 5 kg y ganar resistencia', '2025-11-26 20:30:10.362087+00', '2025-11-26 20:30:10.362087+00', 'juan.perez@example.com', '+521234567890', '$2b$12$d7a5hCOZs03yxdVMURc9WOfI/A8a3q67AMuqW4AGqZI4uwT/vRHsO', NULL, 'usuario', 'f', NULL, 't', NULL, NULL),
+(15, 'Juan sPérez', 28, 'M', 75.50, 178.00, 'intermedio', 'Hipertensión leve', 'Bajar 5 kg y ganar resistencia', '2025-11-27 17:05:41.556754+00', '2025-11-27 17:05:41.556754+00', 'juan.peresz@example.com', '+521234567890', '$2b$12$OYsS14/pvT/t.Vp91VaR1.nkkDSpB3pL3JWwCjWm9aUNB7cAgayZW', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
+(17, 'Juan sPérez', 28, 'M', 75.50, 178.00, 'intermedio', 'Hipertensión leve', 'Bajar 5 kg y ganar resistencia', '2025-11-28 15:48:38.250066+00', '2025-11-28 15:48:38.250066+00', 'perez.sosa@example.com', '+521234567890', '$2b$12$f4qQFyZJq0Ro7Teq72QEquujRt7.Ud4UDVkPv/mup04bHvF2y8H4y', NULL, 'usuario', 'f', NULL, 'f', NULL, 'f'),
+(18, 'Juan sPérez', 28, 'M', 75.50, 178.00, 'intermedio', 'Hipertensión leve', 'Bajar 5 kg y ganar resistencia', '2025-11-28 15:49:11.96506+00', '2025-12-18 20:48:31.166+00', 'perez.sossa@example.com', '+521234567890', '$2b$12$VfRJ7W5NafV/NU43zH0FNOOg7QdNl8K0vy3Ledpvo1GrpWLZKA65K', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE4IiwiZW1haWwiOiJwZXJlei5zb3NzYUBleGFtcGxlLmNvbSIsIm5hbWUiOiJKdWFuIHNQw6lyZXoiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc2NjA5MDkxMSwiZXhwIjoxNzY2MjYzNzExfQ.BL-EBHONzucmRKp-h_E9vj4hn6yBcf6_h4lGIA4ofeM', 'USER', 'f', NULL, 'f', NULL, 't'),
+(19, 'test ', 25, 'M', 70.00, 170.00, 'Basico', '', 'dsadasdsad', '2025-12-18 20:48:01.448408+00', '2025-12-18 20:48:01.448408+00', 'test@fff.com', '', '$2b$12$NIqrAYoOBdMl6ccY3i1e/.GS2UfONsyFItL3kyBpMepIHv390Gbgq', NULL, 'USUARIO', 'f', NULL, 'f', NULL, 't'),
+(20, 'as', 25, 'M', 70.00, 170.00, 'Basico', '', 'sdasdsa', '2025-12-18 20:48:50.810077+00', '2025-12-18 20:48:50.810077+00', 'xdmasterchiefxd@hotmail.com', '', '$2b$12$2XsJIaUbIY3cmUn8Ls4.hOJ/PfB1hLy98cU7/SGBAXUrlCanTN43S', NULL, 'USUARIO', 'f', NULL, 'f', NULL, 't');
