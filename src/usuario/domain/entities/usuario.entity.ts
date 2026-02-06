@@ -20,6 +20,7 @@ export class UsuarioEntity {
   deletedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
+  codigoRecuperacion?: string;
 
   constructor(props: Partial<UsuarioEntity>) {
     Object.assign(this, props);

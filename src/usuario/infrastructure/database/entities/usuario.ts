@@ -67,6 +67,9 @@ export class Usuario {
   @Column({ type: 'timestamptz', nullable: true })
   deleted_at: Date;
 
+  @Column({ length: 50, nullable: true })
+  recovery_code: string;
+
   @OneToOne(() => Preferencia, (p) => p.usuario)
   preferencia: Preferencia;
 
