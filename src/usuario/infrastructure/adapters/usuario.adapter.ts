@@ -26,6 +26,8 @@ export class UsuarioAdapter extends GenericTypeOrmAdapter<UsuarioEntity, Usuario
     super(repository);
   }
 
+
+
   protected toDomain(orm: Usuario): UsuarioEntity {
     const usuario = new UsuarioEntity({
       id: orm.usuario_id,
@@ -47,6 +49,7 @@ export class UsuarioAdapter extends GenericTypeOrmAdapter<UsuarioEntity, Usuario
       deletedAt: orm.deleted_at,
       refreshToken: orm.refresh_token,
       fechaHabeasData: orm.fecha_habeas_data,
+      codigoRecuperacion: orm.recovery_code,
     });
     return usuario;
   }
@@ -72,6 +75,7 @@ export class UsuarioAdapter extends GenericTypeOrmAdapter<UsuarioEntity, Usuario
       deleted_at: domain.deletedAt,
       refresh_token: domain.refreshToken,
       fecha_habeas_data: domain.fechaHabeasData,
+      recovery_code: domain.codigoRecuperacion,
     };
   }
 
@@ -82,6 +86,10 @@ export class UsuarioAdapter extends GenericTypeOrmAdapter<UsuarioEntity, Usuario
   // Implement AuthUsuarioRepositoryPort
   findByEmail(email: string): Promise<UsuarioEntity | null> {
     return this.findOneByEmail(email);
+  }
+
+  async updatePassword(userId: number, newPassword: string): Promise<void> {
+    await this.repository.update({ usuario_id: userId }, { password_hash: newPassword });
   }
 
   findOne(id: number): Promise<UsuarioEntity | null> {
@@ -96,8 +104,20 @@ export class UsuarioAdapter extends GenericTypeOrmAdapter<UsuarioEntity, Usuario
     return this.toDomain(item);
   }
 
+  async findByPhone(phone: string): Promise<UsuarioEntity | null> {
+    const item = await this.repository.findOneBy({ celular: phone });
+    if (!item) {
+      return null;
+    }
+    return this.toDomain(item);
+  }
+
   async updateRefreshToken(id: number, refreshToken: string): Promise<void> {
     await this.repository.update({ usuario_id: id }, { refresh_token: refreshToken, updated_at: new Date().toISOString() });
+  }
+
+  async updateRecoveryCode(id: number, recoveryCode: string): Promise<void> {
+    await this.repository.update({ usuario_id: id }, { recovery_code: recoveryCode, updated_at: new Date().toISOString() });
   }
 }
 
@@ -123,4 +143,5 @@ export const USER_DOMAIN_TO_COLUMN: Record<keyof UsuarioEntity, string> = {
   deletedAt: 'deleted_at',
   createdAt: 'created_at',
   updatedAt: 'updated_at',
+  codigoRecuperacion: 'recovery_code',
 };

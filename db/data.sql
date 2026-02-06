@@ -1,181 +1,3 @@
--- Table Definition
-CREATE TABLE "public"."ejercicio_equipamiento" (
-    "ejercicio_id" int4 NOT NULL,
-    "equipamiento_id" int4 NOT NULL,
-    CONSTRAINT "ejercicio_equipamiento_ejercicio_id_fkey" FOREIGN KEY ("ejercicio_id") REFERENCES "public"."ejercicio"("ejercicio_id"),
-    CONSTRAINT "ejercicio_equipamiento_equipamiento_id_fkey" FOREIGN KEY ("equipamiento_id") REFERENCES "public"."equipamiento"("equipamiento_id"),
-    PRIMARY KEY ("ejercicio_id","equipamiento_id")
-);
-
--- Sequence and defined type
-CREATE SEQUENCE IF NOT EXISTS equipamiento_equipamiento_id_seq;
-
--- Table Definition
-CREATE TABLE "public"."equipamiento" (
-    "equipamiento_id" int4 NOT NULL DEFAULT nextval('equipamiento_equipamiento_id_seq'::regclass),
-    "descripcion" varchar(50) NOT NULL,
-    PRIMARY KEY ("equipamiento_id")
-);
-
-
--- Indices
-CREATE UNIQUE INDEX equipamiento_descripcion_key ON public.equipamiento USING btree (descripcion);
-
--- Sequence and defined type
-CREATE SEQUENCE IF NOT EXISTS preferencia_preferencia_id_seq;
-
--- Table Definition
-CREATE TABLE "public"."preferencia" (
-    "preferencia_id" int4 NOT NULL DEFAULT nextval('preferencia_preferencia_id_seq'::regclass),
-    "usuario_id" int4,
-    "ejercicios_favoritos" text,
-    "ejercicios_a_evitar" text,
-    CONSTRAINT "preferencia_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuario"("usuario_id"),
-    PRIMARY KEY ("preferencia_id")
-);
-
-
--- Indices
-CREATE UNIQUE INDEX preferencia_usuario_id_key ON public.preferencia USING btree (usuario_id);
-
--- Sequence and defined type
-CREATE SEQUENCE IF NOT EXISTS rutina_rutina_id_seq;
-
--- Table Definition
-CREATE TABLE "public"."rutina" (
-    "rutina_id" int4 NOT NULL DEFAULT nextval('rutina_rutina_id_seq'::regclass),
-    "usuario_id" int4,
-    "nombre" varchar(100),
-    "fecha_creacion" date DEFAULT CURRENT_DATE,
-    "tipo_division" varchar(50),
-    CONSTRAINT "rutina_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuario"("usuario_id"),
-    PRIMARY KEY ("rutina_id")
-);
-
--- Sequence and defined type
-CREATE SEQUENCE IF NOT EXISTS sesion_sesion_id_seq;
-
--- Table Definition
-CREATE TABLE "public"."sesion" (
-    "sesion_id" int4 NOT NULL DEFAULT nextval('sesion_sesion_id_seq'::regclass),
-    "rutina_id" int4,
-    "nombre" varchar(100),
-    "dia_orden" int2,
-    CONSTRAINT "sesion_rutina_id_fkey" FOREIGN KEY ("rutina_id") REFERENCES "public"."rutina"("rutina_id"),
-    PRIMARY KEY ("sesion_id")
-);
-
-
--- Indices
-CREATE UNIQUE INDEX sesion_rutina_orden_uk ON public.sesion USING btree (rutina_id, dia_orden);
-
--- Sequence and defined type
-CREATE SEQUENCE IF NOT EXISTS sesion_ejercicio_sesion_ejercicio_id_seq;
-
--- Table Definition
-CREATE TABLE "public"."sesion_ejercicio" (
-    "sesion_ejercicio_id" int4 NOT NULL DEFAULT nextval('sesion_ejercicio_sesion_ejercicio_id_seq'::regclass),
-    "sesion_id" int4,
-    "ejercicio_id" int4,
-    "orden" int2,
-    "series" int2,
-    "repeticiones" int2,
-    "descanso_seg" int2,
-    CONSTRAINT "sesion_ejercicio_ejercicio_id_fkey" FOREIGN KEY ("ejercicio_id") REFERENCES "public"."ejercicio"("ejercicio_id"),
-    CONSTRAINT "sesion_ejercicio_sesion_id_fkey" FOREIGN KEY ("sesion_id") REFERENCES "public"."sesion"("sesion_id"),
-    PRIMARY KEY ("sesion_ejercicio_id")
-);
-
-
--- Indices
-CREATE UNIQUE INDEX sesion_ejercicio_orden_uk ON public.sesion_ejercicio USING btree (sesion_id, orden);
-
--- Sequence and defined type
-CREATE SEQUENCE IF NOT EXISTS ejercicio_ejercicio_id_seq;
-
--- Table Definition
-CREATE TABLE "public"."ejercicio" (
-    "ejercicio_id" int4 NOT NULL DEFAULT nextval('ejercicio_ejercicio_id_seq'::regclass),
-    "nombre" varchar(100) NOT NULL,
-    "categoria" varchar(50),
-    "musculo_principal" varchar(100),
-    PRIMARY KEY ("ejercicio_id")
-);
-
--- Sequence and defined type
-CREATE SEQUENCE IF NOT EXISTS progreso_progreso_id_seq;
-
--- Table Definition
-CREATE TABLE "public"."progreso" (
-    "progreso_id" int4 NOT NULL DEFAULT nextval('progreso_progreso_id_seq'::regclass),
-    "usuario_id" int4,
-    "fecha" date DEFAULT CURRENT_DATE,
-    "peso_kg" numeric(5,2),
-    "medidas" jsonb,
-    "notas" text,
-    "created_at" timestamptz DEFAULT now(),
-    CONSTRAINT "progreso_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuario"("usuario_id"),
-    PRIMARY KEY ("progreso_id")
-);
-
--- Sequence and defined type
-CREATE SEQUENCE IF NOT EXISTS registro_entrenamiento_registro_id_seq;
-
--- Table Definition
-CREATE TABLE "public"."registro_entrenamiento" (
-    "registro_id" int4 NOT NULL DEFAULT nextval('registro_entrenamiento_registro_id_seq'::regclass),
-    "usuario_id" int4,
-    "sesion_id" int4,
-    "sesion_ejercicio_id" int4,
-    "fecha" date DEFAULT CURRENT_DATE,
-    "series_realizadas" int2,
-    "repeticiones_realizadas" int2,
-    "peso_utilizado_kg" numeric(6,2),
-    CONSTRAINT "registro_entrenamiento_sesion_ejercicio_id_fkey" FOREIGN KEY ("sesion_ejercicio_id") REFERENCES "public"."sesion_ejercicio"("sesion_ejercicio_id"),
-    CONSTRAINT "registro_entrenamiento_sesion_id_fkey" FOREIGN KEY ("sesion_id") REFERENCES "public"."sesion"("sesion_id"),
-    CONSTRAINT "registro_entrenamiento_usuario_id_fkey" FOREIGN KEY ("usuario_id") REFERENCES "public"."usuario"("usuario_id"),
-    PRIMARY KEY ("registro_id")
-);
-
--- Sequence and defined type
-CREATE SEQUENCE IF NOT EXISTS usuario_usuario_id_seq;
-
--- Table Definition
-CREATE TABLE "public"."usuario" (
-    "usuario_id" int4 NOT NULL DEFAULT nextval('usuario_usuario_id_seq'::regclass),
-    "nombre" varchar(100) NOT NULL,
-    "edad" int2 NOT NULL,
-    "sexo" bpchar(1) NOT NULL,
-    "peso_kg" numeric(5,2) NOT NULL,
-    "altura_cm" numeric(5,2) NOT NULL,
-    "nivel" varchar(20) NOT NULL,
-    "condiciones_medicas" text,
-    "objetivos" text,
-    "created_at" timestamptz DEFAULT now(),
-    "updated_at" timestamptz DEFAULT now(),
-    "email" varchar(150) NOT NULL,
-    "celular" varchar(20),
-    "password_hash" varchar(255) NOT NULL,
-    "refresh_token" varchar(500),
-    "rol" varchar(50) NOT NULL DEFAULT 'usuario'::character varying,
-    "habeas_data_aceptado" bool NOT NULL DEFAULT false,
-    "fecha_habeas_data" timestamptz,
-    "is_deleted" bool NOT NULL DEFAULT false,
-    "deleted_at" timestamptz,
-    "is_activo" bool,
-    PRIMARY KEY ("usuario_id")
-);
-
-
--- Indices
-CREATE UNIQUE INDEX usuario_email_key ON public.usuario USING btree (email);
-
-
-
-
-
-
-
 INSERT INTO "public"."ejercicio" ("ejercicio_id", "nombre", "categoria", "musculo_principal") VALUES
 (1, 'Press de banca plano', 'Pecho', 'Pectoral mayor'),
 (2, 'Press de banca inclinado', 'Pecho', 'Pectoral superior'),
@@ -276,18 +98,6 @@ INSERT INTO "public"."ejercicio" ("ejercicio_id", "nombre", "categoria", "muscul
 (97, 'Wall balls', 'Funcional', 'Cuerpo completo'),
 (98, 'Muscle ups', 'Funcional', 'Espalda y tríceps'),
 (99, 'Handstand push ups', 'Funcional', 'Hombros');
-INSERT INTO "public"."progreso" ("progreso_id", "usuario_id", "fecha", "peso_kg", "medidas", "notas", "created_at") VALUES
-(4, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-11-27 22:38:44.045154+00'),
-(5, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-03 16:23:36.46823+00'),
-(6, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 20:42:14.754811+00'),
-(7, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 20:42:16.302531+00'),
-(8, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 20:53:37.783609+00'),
-(9, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 21:17:52.228997+00'),
-(10, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 21:20:14.390206+00'),
-(11, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 21:23:28.853945+00'),
-(12, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-09 16:40:13.78232+00'),
-(13, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-09 16:46:19.534903+00'),
-(14, 18, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-10 16:10:22.96585+00');
 
 INSERT INTO "public"."usuario" ("usuario_id", "nombre", "edad", "sexo", "peso_kg", "altura_cm", "nivel", "condiciones_medicas", "objetivos", "created_at", "updated_at", "email", "celular", "password_hash", "refresh_token", "rol", "habeas_data_aceptado", "fecha_habeas_data", "is_deleted", "deleted_at", "is_activo") VALUES
 (1, 'Ricardo Silva', 50, 'M', 88.00, 182.00, 'principiante', 'Artrosis en rodilla izquierda', 'Rehabilitación y movilidad', '2025-11-25 02:25:49.767187+00', '2025-11-25 02:25:49.767187+00', 'user1@temp.local', NULL, 'pending', NULL, 'usuario', 'f', NULL, 'f', NULL, NULL),
@@ -308,3 +118,15 @@ INSERT INTO "public"."usuario" ("usuario_id", "nombre", "edad", "sexo", "peso_kg
 (18, 'Juan sPérez', 28, 'M', 75.50, 178.00, 'intermedio', 'Hipertensión leve', 'Bajar 5 kg y ganar resistencia', '2025-11-28 15:49:11.96506+00', '2025-12-18 20:48:31.166+00', 'perez.sossa@example.com', '+521234567890', '$2b$12$VfRJ7W5NafV/NU43zH0FNOOg7QdNl8K0vy3Ledpvo1GrpWLZKA65K', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE4IiwiZW1haWwiOiJwZXJlei5zb3NzYUBleGFtcGxlLmNvbSIsIm5hbWUiOiJKdWFuIHNQw6lyZXoiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc2NjA5MDkxMSwiZXhwIjoxNzY2MjYzNzExfQ.BL-EBHONzucmRKp-h_E9vj4hn6yBcf6_h4lGIA4ofeM', 'USER', 'f', NULL, 'f', NULL, 't'),
 (19, 'test ', 25, 'M', 70.00, 170.00, 'Basico', '', 'dsadasdsad', '2025-12-18 20:48:01.448408+00', '2025-12-18 20:48:01.448408+00', 'test@fff.com', '', '$2b$12$NIqrAYoOBdMl6ccY3i1e/.GS2UfONsyFItL3kyBpMepIHv390Gbgq', NULL, 'USUARIO', 'f', NULL, 'f', NULL, 't'),
 (20, 'as', 25, 'M', 70.00, 170.00, 'Basico', '', 'sdasdsa', '2025-12-18 20:48:50.810077+00', '2025-12-18 20:48:50.810077+00', 'xdmasterchiefxd@hotmail.com', '', '$2b$12$2XsJIaUbIY3cmUn8Ls4.hOJ/PfB1hLy98cU7/SGBAXUrlCanTN43S', NULL, 'USUARIO', 'f', NULL, 'f', NULL, 't');
+INSERT INTO "public"."progreso" ("progreso_id", "usuario_id", "fecha", "peso_kg", "medidas", "notas", "created_at") VALUES
+(4, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-11-27 22:38:44.045154+00'),
+(5, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-03 16:23:36.46823+00'),
+(6, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 20:42:14.754811+00'),
+(7, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 20:42:16.302531+00'),
+(8, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 20:53:37.783609+00'),
+(9, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 21:17:52.228997+00'),
+(10, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 21:20:14.390206+00'),
+(11, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-04 21:23:28.853945+00'),
+(12, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-09 16:40:13.78232+00'),
+(13, 12, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-09 16:46:19.534903+00'),
+(14, 18, '2025-06-01', 75.45, '{"brazo": 35.5, "pecho": 100, "cintura": 85}', 'Primera semana del plan de volumen', '2025-12-10 16:10:22.96585+00');
