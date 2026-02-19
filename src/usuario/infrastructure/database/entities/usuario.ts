@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from 'typeorm';
 import { Preferencia } from './preferencia';
 import { Progreso } from './progreso';
+import { Objetivo } from './objetivo';
 
 @Entity('usuario')
 export class Usuario {
@@ -75,4 +76,7 @@ export class Usuario {
 
   @OneToMany(() => Progreso, (p) => p.usuario)
   progreso: Progreso[];
+
+  @OneToMany(() => Objetivo, (o) => o.usuario)
+  objetivos_rel: Objetivo[];
 }

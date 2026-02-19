@@ -2,7 +2,7 @@ import { Between, DeepPartial, FindManyOptions, FindOptionsWhere, In, Like, Obje
 import { Query } from './query.types';
 
 export abstract class GenericTypeOrmAdapter<E, O extends ObjectLiteral, PK extends keyof O> {
-  constructor(protected readonly repository: Repository<O>) {}
+  constructor(protected readonly repository: Repository<O>) { }
 
   protected abstract primaryKeyName: PK;
 
@@ -78,7 +78,15 @@ export abstract class GenericTypeOrmAdapter<E, O extends ObjectLiteral, PK exten
   async partialUpdate(id: O[PK], partial: Partial<E>): Promise<E> {
     await this.findOneByIdOrFail(id);
 
-    await this.repository.update({ [this.primaryKeyName]: id } as any, partial as any);
+    const updateData: any = {};
+    for (const [key, value] of Object.entries(partial)) {
+      const col = this.toColumnName(key as keyof E);
+      if (col && col !== '') {
+        updateData[col] = value;
+      }
+    }
+
+    await this.repository.update({ [this.primaryKeyName]: id } as any, updateData as any);
 
     const updated = await this.repository.findOneBy({
       [this.primaryKeyName]: id,

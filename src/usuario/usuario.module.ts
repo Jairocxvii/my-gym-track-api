@@ -12,11 +12,19 @@ import { PROGRESO_PORT } from './domain/ports/progreso.port';
 import { ProgresoAdapter } from './infrastructure/adapters/progreso.adapter';
 import { CommonModule } from '@common/common.module';
 import { AuthUsuarioRepositoryPort } from '../auth/domain/ports/auth-usuario-repository.port';
+import { Objetivo } from './infrastructure/database/entities/objetivo';
+import { Actividad } from './infrastructure/database/entities/actividad';
+import { TipoObjetivo } from './infrastructure/database/entities/tipo-objetivo';
+import { UnidadMedida } from './infrastructure/database/entities/unidad-medida';
+import { ObjetivoController } from './infrastructure/controllers/objetivo.controller';
+import { ObjetivoService } from './application/services/objetivo.service';
+import { ObjetivoAdapter } from './infrastructure/adapters/objetivo.adapter';
+import { OBJETIVO_PORT } from './domain/ports/objetivo.port';
 
 @Module({
   imports: [CommonModule,
-    TypeOrmModule.forFeature([Usuario, Preferencia, Progreso])],
-  controllers: [UsuarioController],
+    TypeOrmModule.forFeature([Usuario, Preferencia, Progreso, Objetivo, Actividad, TipoObjetivo, UnidadMedida])],
+  controllers: [UsuarioController, ObjetivoController],
   providers: [
     UsuarioAdapter,
     {
@@ -31,9 +39,14 @@ import { AuthUsuarioRepositoryPort } from '../auth/domain/ports/auth-usuario-rep
       provide: PROGRESO_PORT,
       useClass: ProgresoAdapter,
     },
+    {
+      provide: OBJETIVO_PORT,
+      useClass: ObjetivoAdapter,
+    },
     UsuarioService,
     ProgresoService,
+    ObjetivoService,
   ],
-  exports: [UsuarioService, AuthUsuarioRepositoryPort],
+  exports: [UsuarioService, AuthUsuarioRepositoryPort, ObjetivoService],
 })
 export class UsuarioModule { }
