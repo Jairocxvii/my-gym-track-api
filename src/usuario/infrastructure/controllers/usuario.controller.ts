@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put } from '@nestjs/common';
 import { UsuarioService } from '../../application/services/usuario.service';
 import { ProgresoService } from '../../application/services/progreso.service';
 import { FindUsuariosDto } from '../dto/find-usuarios.dto';
@@ -24,7 +24,7 @@ export class UsuarioController {
   }
 
   @Post('progreso')
-  @Auth(Roles.USUARIO)
+  @Auth()
   createProgress(@User() user: UsuarioEntity, @Body() createUserDto: ProgresoCreateDto) {
     return this.ProgresoService.create(createUserDto, user.id);
   }
@@ -50,8 +50,9 @@ export class UsuarioController {
     return this.ProgresoService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    console.log(updateUserDto);
     return this.UsuarioService.update(+id, updateUserDto);
   }
 
