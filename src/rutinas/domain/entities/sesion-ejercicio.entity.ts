@@ -7,5 +7,8 @@ export class SesionEjercicioEntity {
     public series: number,
     public repeticiones: number,
     public descansoSeg: number,
-  ) {}
+    public isDeleted: boolean = false,
+    public deletedAt?: Date,
+    public isActivo: boolean = true,
+  ) { }
 }

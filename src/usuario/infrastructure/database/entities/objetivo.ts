@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, DeleteDateColumn } from 'typeorm';
 import { Usuario } from './usuario';
 import { TipoObjetivo } from './tipo-objetivo';
 
@@ -27,6 +27,15 @@ export class Objetivo {
 
     @Column({ default: false })
     completado: boolean;
+
+    @Column({ default: false })
+    is_deleted: boolean;
+
+    @DeleteDateColumn({ nullable: true })
+    deleted_at: Date;
+
+    @Column({ default: true })
+    is_activo: boolean;
 
     @ManyToOne(() => Usuario)
     @JoinColumn({ name: 'usuario_id' })

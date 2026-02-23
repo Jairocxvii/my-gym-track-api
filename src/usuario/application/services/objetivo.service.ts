@@ -23,7 +23,7 @@ export class ObjetivoService {
             usuarioId,
             fechaInicio: new Date(dto.fechaInicio),
             fechaLimite: new Date(dto.fechaLimite),
-            completado: dto.completado || false,
+            completado: false,
         });
         const created = await this.objetivoPort.create(entity);
         return ObjetivoMapper.toResponse(created);

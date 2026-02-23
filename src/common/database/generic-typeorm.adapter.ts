@@ -147,6 +147,12 @@ export abstract class GenericTypeOrmAdapter<E, O extends ObjectLiteral, PK exten
       else where[col] = v;
     }
 
+    // Filtro global para Soft Delete si la columna existe en el ORM
+    const hasDeletedCol = this.repository.metadata.columns.some(col => col.propertyName === 'is_deleted' || col.databaseName === 'is_deleted');
+    if (hasDeletedCol) {
+      where['is_deleted'] = false;
+    }
+
     /* LIKE */
     if (q._like) {
       for (const [k, v] of Object.entries(q._like)) where[k] = Like(`%${v}%`);

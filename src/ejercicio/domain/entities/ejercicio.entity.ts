@@ -4,5 +4,8 @@ export class EjercicioEntity {
     public nombre: string,
     public categoria?: string,
     public musculoPrincipal?: string,
-  ) {}
+    public isDeleted: boolean = false,
+    public deletedAt?: Date,
+    public isActivo: boolean = true,
+  ) { }
 }

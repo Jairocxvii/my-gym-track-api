@@ -10,7 +10,7 @@ import { NotFoundException } from '@nestjs/common';
  * @template K - Tipo de la Primary Key (number | string | UUID, etc.)
  */
 export abstract class GenericTypeOrmAdapter<E, O extends ObjectLiteral, K = number> {
-  constructor(protected readonly repository: Repository<O>) {}
+  constructor(protected readonly repository: Repository<O>) { }
 
   /* -------------- Métodos abstractos de mapeo -------------- */
 
@@ -48,7 +48,13 @@ export abstract class GenericTypeOrmAdapter<E, O extends ObjectLiteral, K = numb
    * Obtiene todas las entidades
    */
   async findAll(): Promise<E[]> {
-    const list = await this.repository.find();
+    const hasDeletedCol = this.repository.metadata.columns.some(
+      (col) => col.propertyName === 'is_deleted' || col.databaseName === 'is_deleted',
+    );
+
+    const list = await this.repository.find({
+      where: hasDeletedCol ? ({ is_deleted: false } as any) : {},
+    });
     return list.map((o) => this.toDomain(o));
   }
 

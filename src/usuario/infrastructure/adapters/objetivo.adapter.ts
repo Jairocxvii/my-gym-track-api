@@ -39,6 +39,9 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
             fechaInicio: orm.fecha_inicio,
             fechaLimite: orm.fecha_limite,
             completado: orm.completado,
+            isDeleted: orm.is_deleted,
+            deletedAt: orm.deleted_at,
+            isActivo: orm.is_activo,
             tipoObjetivoNombre: orm.tipo_objetivo?.nombre,
             unidadMedidaNombre: orm.tipo_objetivo?.unidad_medida?.nombre,
         });
@@ -54,6 +57,9 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
             fecha_inicio: domain.fechaInicio,
             fecha_limite: domain.fechaLimite,
             completado: domain.completado,
+            is_deleted: domain.isDeleted,
+            deleted_at: domain.deletedAt,
+            is_activo: domain.isActivo,
         };
     }
 
@@ -85,6 +91,9 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
                     id: t.id,
                     nombre: t.nombre,
                     unidadMedidaId: t.unidad_medida_id,
+                    isDeleted: t.is_deleted,
+                    deletedAt: t.deleted_at,
+                    isActivo: t.is_activo,
                 }),
         );
     }
@@ -109,6 +118,9 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
                     id: u.id,
                     nombre: u.nombre,
                     abreviatura: u.abreviatura,
+                    isDeleted: u.is_deleted,
+                    deletedAt: u.deleted_at,
+                    isActivo: u.is_activo,
                 }),
         );
     }
@@ -131,6 +143,9 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
                     descripcion: a.descripcion,
                     valorEspecifico: Number(a.valor_especifico),
                     createdAt: a.creado_en,
+                    isDeleted: a.is_deleted,
+                    deletedAt: a.deleted_at,
+                    isActivo: a.is_activo,
                 }),
         );
     }
@@ -162,6 +177,9 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
             descripcion: created.descripcion,
             valorEspecifico: Number(created.valor_especifico),
             createdAt: created.creado_en,
+            isDeleted: created.is_deleted,
+            deletedAt: created.deleted_at,
+            isActivo: created.is_activo,
         });
     }
 
@@ -192,5 +210,8 @@ export const OBJETIVO_DOMAIN_TO_COLUMN: Record<keyof ObjetivoEntity, string> = {
     completado: 'completado',
     tipoObjetivoNombre: '',
     unidadMedidaNombre: '',
+    isDeleted: 'is_deleted',
+    deletedAt: 'deleted_at',
+    isActivo: 'is_activo',
 };
 

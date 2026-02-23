@@ -1,5 +1,5 @@
 // sesion-ejercicio.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, DeleteDateColumn } from 'typeorm';
 import { Sesion } from './sesion';
 
 @Entity('sesion_ejercicio')
@@ -25,4 +25,13 @@ export class SesionEjercicio {
 
   @Column()
   descanso_seg: number;
+
+  @Column({ default: false })
+  is_deleted: boolean;
+
+  @DeleteDateColumn({ nullable: true })
+  deleted_at: Date;
+
+  @Column({ default: true })
+  is_activo: boolean;
 }

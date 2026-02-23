@@ -1,5 +1,5 @@
 // ejercicio.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn } from 'typeorm';
 
 @Entity('ejercicio')
 export class Ejercicio {
@@ -14,4 +14,13 @@ export class Ejercicio {
 
   @Column({ length: 100, nullable: true })
   musculo_principal: string;
+
+  @Column({ default: false })
+  is_deleted: boolean;
+
+  @DeleteDateColumn({ nullable: true })
+  deleted_at: Date;
+
+  @Column({ default: true })
+  is_activo: boolean;
 }

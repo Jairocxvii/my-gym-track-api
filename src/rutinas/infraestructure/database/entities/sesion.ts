@@ -1,5 +1,5 @@
 // sesion.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, Unique, DeleteDateColumn } from 'typeorm';
 import { Rutina } from './rutina';
 import { SesionEjercicio } from './sesion-ejercicio';
 
@@ -20,4 +20,13 @@ export class Sesion {
 
   @OneToMany(() => SesionEjercicio, (se) => se.sesion)
   ejercicios: SesionEjercicio[];
+
+  @Column({ default: false })
+  is_deleted: boolean;
+
+  @DeleteDateColumn({ nullable: true })
+  deleted_at: Date;
+
+  @Column({ default: true })
+  is_activo: boolean;
 }
