@@ -10,23 +10,30 @@ import { Auth } from '../../../auth/infrastructure/decorators/auth.decorator';
 import { Roles } from '../../domain/interfaces/roles';
 import { User } from 'src/auth/infrastructure/decorators/user.decorator';
 import { UsuarioEntity } from 'src/usuario/domain/entities/usuario.entity';
+import { ProgresoEntity } from 'src/usuario/domain/entities/progreso.entity';
 
 @Controller('usuario')
 export class UsuarioController {
   constructor(
-    private readonly UsuarioService: UsuarioService,
-    private readonly ProgresoService: ProgresoService,
+    private readonly usuarioService: UsuarioService,
+    private readonly progresoService: ProgresoService,
   ) { }
 
   @Post()
   create(@Body() createUserDto: UsuarioCreateDto) {
-    return this.UsuarioService.create(createUserDto);
+    const usuario = new UsuarioEntity(createUserDto);
+    // password will be hashed in the service
+    return this.usuarioService.create(usuario, createUserDto.password);
   }
 
   @Post('progreso')
   @Auth()
   createProgress(@User() user: UsuarioEntity, @Body() createUserDto: ProgresoCreateDto) {
-    return this.ProgresoService.create(createUserDto, user.id);
+    const entity = new ProgresoEntity({
+      ...createUserDto,
+      usuarioId: user.id,
+    });
+    return this.progresoService.create(entity);
   }
 
   @Get()
@@ -37,27 +44,29 @@ export class UsuarioController {
       limit: q.limit,
       offset: q.offset,
     };
-    return this.UsuarioService.findAll(query);
+    return this.usuarioService.findAll(query);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.UsuarioService.findOne(+id);
+    return this.usuarioService.findOne(+id);
   }
 
   @Get('progreso/:id')
   findOneProgress(@Param('id') id: string) {
-    return this.ProgresoService.findOne(+id);
+    return this.progresoService.findOne(+id);
   }
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    console.log(updateUserDto);
-    return this.UsuarioService.update(+id, updateUserDto);
+    const partial: Partial<UsuarioEntity> = {
+      ...updateUserDto,
+    };
+    return this.usuarioService.update(+id, partial);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.UsuarioService.delete(+id);
+    return this.usuarioService.delete(+id);
   }
 }

@@ -5,6 +5,9 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Auth } from 'src/auth/infrastructure/decorators/auth.decorator';
 import { User } from 'src/auth/infrastructure/decorators/user.decorator';
 import { UsuarioEntity } from '../../domain/entities/usuario.entity';
+import { ObjetivoEntity } from '../../domain/entities/objetivo.entity';
+import { ActividadEntity } from '../../domain/entities/actividad.entity';
+import { TipoObjetivoEntity } from '../../domain/entities/tipo-objetivo.entity';
 import { Roles } from 'src/usuario/domain/interfaces/roles';
 
 @ApiTags('objetivos')
@@ -16,7 +19,14 @@ export class ObjetivoController {
     @Auth()
     @ApiOperation({ summary: 'Crear un nuevo objetivo' })
     async create(@User() user: UsuarioEntity, @Body() createDto: ObjetivoCreateDto) {
-        return this.objetivoService.create(createDto, user.id);
+        const entity = new ObjetivoEntity({
+            ...createDto,
+            usuarioId: user.id,
+            fechaInicio: new Date(createDto.fechaInicio),
+            fechaLimite: new Date(createDto.fechaLimite),
+            completado: false,
+        });
+        return this.objetivoService.create(entity);
     }
 
     @Patch(':id')
@@ -27,7 +37,22 @@ export class ObjetivoController {
         @Param('id', ParseIntPipe) id: number,
         @Body() updateDto: ObjetivoUpdateDto,
     ) {
-        return this.objetivoService.update(id, updateDto, user.id);
+        const partial: Partial<ObjetivoEntity> = {
+            ...updateDto,
+            fechaInicio: updateDto.fechaInicio ? new Date(updateDto.fechaInicio) : undefined,
+            fechaLimite: updateDto.fechaLimite ? new Date(updateDto.fechaLimite) : undefined,
+        };
+        return this.objetivoService.update(id, partial, user.id);
+    }
+
+    @Delete(':id')
+    @Auth()
+    @ApiOperation({ summary: 'Eliminar un objetivo' })
+    async delete(
+        @User() user: UsuarioEntity,
+        @Param('id', ParseIntPipe) id: number,
+    ) {
+        return this.objetivoService.delete(id, user.id);
     }
 
     @Get('all')
@@ -47,7 +72,8 @@ export class ObjetivoController {
     @Auth(Roles.ADMINISTRADOR)
     @ApiOperation({ summary: 'Crear un tipo de objetivo' })
     async createType(@Body() dto: TipoObjetivoDto) {
-        return this.objetivoService.createType(dto);
+        const entity = new TipoObjetivoEntity(dto);
+        return this.objetivoService.createType(entity);
     }
 
     @Get('unidades-medida')
@@ -67,7 +93,12 @@ export class ObjetivoController {
     @Auth()
     @ApiOperation({ summary: 'Agregar una actividad a un objetivo' })
     async addActivity(@User() user: UsuarioEntity, @Param('id', ParseIntPipe) goalId: number, @Body() dto: ActividadCreateDto) {
-        return this.objetivoService.addActivity(user.id, goalId, dto);
+        const entity = new ActividadEntity({
+            ...dto,
+            objetivoId: goalId,
+            usuarioId: user.id,
+        });
+        return this.objetivoService.addActivity(user.id, goalId, entity);
     }
 
     @Delete('actividades/:activityId')
@@ -75,6 +106,13 @@ export class ObjetivoController {
     @ApiOperation({ summary: 'Eliminar una actividad' })
     async removeActivity(@User() user: UsuarioEntity, @Param('activityId', ParseIntPipe) activityId: number) {
         return this.objetivoService.removeActivity(user.id, activityId);
+    }
+
+    @Get('actividades/all')
+    @Auth()
+    @ApiOperation({ summary: 'obtener todas las actividades de un usuario' })
+    async getActivities(@User() user: UsuarioEntity) {
+        return this.objetivoService.getActivities(user.id);
     }
 }
 

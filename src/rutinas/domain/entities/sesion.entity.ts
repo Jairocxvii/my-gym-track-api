@@ -1,6 +1,6 @@
 export class SesionEntity {
   constructor(
-    public id: number,
+    public id: number | undefined,
     public rutinaId: number,
     public nombre: string,
     public diaOrden: number,

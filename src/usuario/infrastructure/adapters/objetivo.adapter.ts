@@ -131,6 +131,7 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
                 objetivo_id: goalId,
                 usuario_id: usuarioId,
             },
+            relations: ['objetivo', 'unidad_medida'],
         });
         return activities.map(
             (a) =>
@@ -146,6 +147,35 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
                     isDeleted: a.is_deleted,
                     deletedAt: a.deleted_at,
                     isActivo: a.is_activo,
+                    nombreObjetivo: a.objetivo?.nombre_personalizado,
+                    unidadMedidaNombre: a.unidad_medida?.nombre,
+                }),
+        );
+    }
+
+    async findActivities(usuarioId: number): Promise<ActividadEntity[]> {
+        const activities = await this.actividadRepo.find({
+            where: {
+                usuario_id: usuarioId,
+            },
+            relations: ['objetivo', 'unidad_medida'],
+        });
+        return activities.map(
+            (a) =>
+                new ActividadEntity({
+                    id: a.id,
+                    objetivoId: a.objetivo_id,
+                    usuarioId: a.usuario_id,
+                    unidadMedidaId: a.unidad_medida_id,
+                    nombre: a.nombre,
+                    descripcion: a.descripcion,
+                    valorEspecifico: Number(a.valor_especifico),
+                    createdAt: a.creado_en,
+                    isDeleted: a.is_deleted,
+                    deletedAt: a.deleted_at,
+                    isActivo: a.is_activo,
+                    nombreObjetivo: a.objetivo?.nombre_personalizado,
+                    unidadMedidaNombre: a.unidad_medida?.nombre,
                 }),
         );
     }
@@ -158,6 +188,10 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
         if (!goal) {
             throw new Error('Objetivo no encontrado o no pertenece al usuario');
         }
+
+        const unit = await this.unidadMedidaRepo.findOne({
+            where: { id: activity.unidadMedidaId },
+        });
 
         const created = await this.actividadRepo.save({
             objetivo_id: activity.objetivoId,
@@ -180,6 +214,8 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
             isDeleted: created.is_deleted,
             deletedAt: created.deleted_at,
             isActivo: created.is_activo,
+            nombreObjetivo: goal.nombre_personalizado,
+            unidadMedidaNombre: unit?.nombre,
         });
     }
 
@@ -195,7 +231,11 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
             throw new Error('Actividad no encontrada o no pertenece al usuario');
         }
 
-        await this.actividadRepo.delete(activityId);
+        await this.actividadRepo.update(activityId, {
+            is_deleted: true,
+            is_activo: false,
+            deleted_at: new Date(),
+        });
     }
 }
 

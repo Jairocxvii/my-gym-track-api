@@ -1,6 +1,6 @@
 export class RutinaEntity {
   constructor(
-    public id: number,
+    public id: number | undefined,
     public usuarioId: number,
     public nombre?: string,
     public fechaCreacion?: Date,

@@ -10,6 +10,8 @@ export class ActividadEntity {
     isDeleted: boolean;
     deletedAt?: Date;
     isActivo: boolean;
+    nombreObjetivo?: string;
+    unidadMedidaNombre?: string;
 
     constructor(props: Partial<ActividadEntity>) {
         Object.assign(this, props);

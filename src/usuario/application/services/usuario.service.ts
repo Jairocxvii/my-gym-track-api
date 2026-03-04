@@ -17,9 +17,10 @@ export class UsuarioService {
     private readonly hasherService: HasherPort,
   ) { }
 
-  async create(createUserDto: UsuarioCreateDto) {
-    const usuario = new UsuarioEntity(createUserDto);
-    usuario.passwordHash = await this.hasherService.hash(createUserDto.password);
+  async create(usuario: UsuarioEntity, rawPassword?: string) {
+    if (rawPassword) {
+      usuario.passwordHash = await this.hasherService.hash(rawPassword);
+    }
     usuario.isActivo = true;
     usuario.rol = Roles.USUARIO;
     const usuarioCreado = await this.usuarioPort.create(usuario);
@@ -57,8 +58,8 @@ export class UsuarioService {
     await this.usuarioPort.updateRefreshToken(id, refreshToken);
   }
 
-  async update(id: number, updateUserDto: any): Promise<UsuarioResponseDto> {
-    const usuarioActualizado = await this.usuarioPort.update(id, updateUserDto);
+  async update(id: number, partial: Partial<UsuarioEntity>): Promise<UsuarioResponseDto> {
+    const usuarioActualizado = await this.usuarioPort.update(id, partial as UsuarioEntity);
     return UsuarioApiMapper.toResponse(usuarioActualizado);
   }
 

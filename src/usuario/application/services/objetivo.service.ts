@@ -17,34 +17,26 @@ export class ObjetivoService {
         private readonly objetivoPort: ObjetivoPort,
     ) { }
 
-    async create(dto: ObjetivoCreateDto, usuarioId: number) {
-        const entity = new ObjetivoEntity({
-            ...dto,
-            usuarioId,
-            fechaInicio: new Date(dto.fechaInicio),
-            fechaLimite: new Date(dto.fechaLimite),
-            completado: false,
-        });
+    async create(entity: ObjetivoEntity) {
         const created = await this.objetivoPort.create(entity);
         return ObjetivoMapper.toResponse(created);
     }
 
-    async update(id: number, dto: ObjetivoUpdateDto, usuarioId: number) {
+    async update(id: number, partial: Partial<ObjetivoEntity>, usuarioId: number) {
         const goal = await this.objetivoPort.findOneById(id);
         if (!goal || goal.usuarioId !== usuarioId) {
             throw new EntityNotFoundException('Objetivo', id);
         }
 
-        const partial: Partial<ObjetivoEntity> = {
-            ...dto,
-            fechaInicio: dto.fechaInicio ? new Date(dto.fechaInicio) : undefined,
-            fechaLimite: dto.fechaLimite ? new Date(dto.fechaLimite) : undefined,
-        };
         const updated = await this.objetivoPort.partialUpdate(id, partial);
         return ObjetivoMapper.toResponse(updated);
 
     }
 
+    async getActivities(usuarioId: number) {
+        const activities = await this.objetivoPort.findActivities(usuarioId);
+        return activities.map((a) => ObjetivoMapper.actividadToResponse(a));
+    }
 
 
     async findAll(usuarioId: number) {
@@ -60,17 +52,12 @@ export class ObjetivoService {
         return ObjetivoMapper.toResponse(goal);
     }
 
-    async addActivity(usuarioId: number, goalId: number, dto: ActividadCreateDto) {
+    async addActivity(usuarioId: number, goalId: number, activity: ActividadEntity) {
         const goal = await this.objetivoPort.findOneById(goalId);
         if (!goal || goal.usuarioId !== usuarioId) {
             throw new EntityNotFoundException('Objetivo', goalId);
         }
 
-        const activity = new ActividadEntity({
-            ...dto,
-            objetivoId: goalId,
-            usuarioId,
-        });
         const created = await this.objetivoPort.addActivity(usuarioId, activity);
         return ObjetivoMapper.actividadToResponse(created);
     }
@@ -86,8 +73,16 @@ export class ObjetivoService {
         return types.map(ObjetivoMapper.tipoToResponse);
     }
 
-    async createType(dto: TipoObjetivoDto) {
-        const type = new TipoObjetivoEntity(dto);
+    async delete(id: number, usuarioId: number) {
+        const goal = await this.objetivoPort.findOneById(id);
+        if (!goal || goal.usuarioId !== usuarioId) {
+            throw new EntityNotFoundException('Objetivo', id);
+        }
+        await this.objetivoPort.softDelete(id);
+        return { success: true };
+    }
+
+    async createType(type: TipoObjetivoEntity) {
         const created = await this.objetivoPort.createType(type);
         return ObjetivoMapper.tipoToResponse(created);
     }

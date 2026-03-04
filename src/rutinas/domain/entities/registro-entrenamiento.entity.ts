@@ -1,6 +1,6 @@
 export class RegistroEntrenamientoEntity {
   constructor(
-    public id: number,
+    public id: number | undefined,
     public usuarioId: number,
     public sesionId: number,
     public sesionEjercicioId: number,

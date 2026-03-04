@@ -1,18 +1,20 @@
-// sesion-ejercicio.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, DeleteDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, DeleteDateColumn, JoinColumn } from 'typeorm';
 import { Sesion } from './sesion';
+import { Ejercicio } from './ejercicio';
 
 @Entity('sesion_ejercicio')
 @Unique(['sesion', 'orden'])
 export class SesionEjercicio {
-  @PrimaryGeneratedColumn()
-  sesion_ejercicio_id: number;
+  @PrimaryGeneratedColumn({ name: 'sesion_ejercicio_id' })
+  sesionEjercicioId: number;
 
   @ManyToOne(() => Sesion, (s) => s.ejercicios)
+  @JoinColumn({ name: 'sesion_id' })
   sesion: Sesion;
 
-  @Column({ name: 'ejercicio_id' })
-  ejercicioId: number;
+  @ManyToOne(() => Ejercicio)
+  @JoinColumn({ name: 'ejercicio_id' })
+  ejercicio: Ejercicio;
 
   @Column()
   orden: number;
@@ -23,15 +25,15 @@ export class SesionEjercicio {
   @Column()
   repeticiones: number;
 
-  @Column()
-  descanso_seg: number;
+  @Column({ name: 'descanso_seg' })
+  descansoSeg: number;
 
-  @Column({ default: false })
-  is_deleted: boolean;
+  @Column({ default: false, name: 'is_deleted' })
+  isDeleted: boolean;
 
-  @DeleteDateColumn({ nullable: true })
-  deleted_at: Date;
+  @DeleteDateColumn({ nullable: true, name: 'deleted_at' })
+  deletedAt: Date;
 
-  @Column({ default: true })
-  is_activo: boolean;
+  @Column({ default: true, name: 'is_activo' })
+  isActivo: boolean;
 }

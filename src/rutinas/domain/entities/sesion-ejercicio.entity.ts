@@ -1,6 +1,6 @@
 export class SesionEjercicioEntity {
   constructor(
-    public id: number,
+    public id: number | undefined,
     public sesionId: number,
     public ejercicioId: number,
     public orden: number,

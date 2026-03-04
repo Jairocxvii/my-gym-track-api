@@ -22,8 +22,10 @@ export class ObjetivoMapper {
         return {
             id: actividad.id,
             objetivoId: actividad.objetivoId,
+            nombreObjetivo: actividad.nombreObjetivo,
             usuarioId: actividad.usuarioId,
             unidadMedidaId: actividad.unidadMedidaId,
+            unidadMedida: actividad.unidadMedidaNombre,
             nombre: actividad.nombre,
             descripcion: actividad.descripcion,
             valorEspecifico: actividad.valorEspecifico,
