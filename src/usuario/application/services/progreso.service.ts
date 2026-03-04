@@ -11,9 +11,7 @@ export class ProgresoService {
     private readonly progresoPort: ProgresoPort,
   ) { }
 
-  async create(createProgresoDto: ProgresoCreateDto, usuarioId: number) {
-    const progreso = new ProgresoEntity(createProgresoDto);
-    progreso.usuarioId = usuarioId;
+  async create(progreso: ProgresoEntity) {
     const progresoCreado = await this.progresoPort.create(progreso);
     return ProgresoApiMapper.toResponse(progresoCreado);
   }
@@ -26,8 +24,8 @@ export class ProgresoService {
     return ProgresoApiMapper.toResponse(progreso);
   }
 
-  async update(id: number, updateProgresoDto: any) {
-    const progresoActualizado = await this.progresoPort.update(id, updateProgresoDto);
+  async update(id: number, partial: Partial<ProgresoEntity>) {
+    const progresoActualizado = await this.progresoPort.update(id, partial as ProgresoEntity);
     return ProgresoApiMapper.toResponse(progresoActualizado);
   }
 

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, DeleteDateColumn } from 'typeorm';
 import { Objetivo } from './objetivo';
 import { UnidadMedida } from './unidad-medida';
 import { Usuario } from './usuario';
@@ -28,6 +28,15 @@ export class Actividad {
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     creado_en: Date;
+
+    @Column({ default: false })
+    is_deleted: boolean;
+
+    @DeleteDateColumn({ nullable: true })
+    deleted_at: Date;
+
+    @Column({ default: true })
+    is_activo: boolean;
 
     @ManyToOne(() => Objetivo)
     @JoinColumn({ name: 'objetivo_id' })

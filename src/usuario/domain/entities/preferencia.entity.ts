@@ -4,5 +4,8 @@ export class PreferenciaEntity {
     public usuarioId: number,
     public ejerciciosFavoritos?: string,
     public ejerciciosAEvitar?: string,
-  ) {}
+    public isDeleted: boolean = false,
+    public deletedAt?: Date,
+    public isActivo: boolean = true,
+  ) { }
 }

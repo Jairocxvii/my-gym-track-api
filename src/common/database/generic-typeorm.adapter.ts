@@ -131,6 +131,10 @@ export abstract class GenericTypeOrmAdapter<E, O extends ObjectLiteral, PK exten
     await this.repository.clear();
   }
 
+  async softDelete(id: O[PK]): Promise<void> {
+    await this.repository.update({ [this.primaryKeyName]: id } as any, { is_deleted: true, deleted_at: new Date() } as any);
+  }
+
   private buildFindManyOptions(q?: Query<E>): FindManyOptions<O> {
     if (!q) return {};
 
@@ -145,6 +149,12 @@ export abstract class GenericTypeOrmAdapter<E, O extends ObjectLiteral, PK exten
       const col = this.toColumnName(k as keyof E); // ← traducción
       if (Array.isArray(v)) where[col] = In(v);
       else where[col] = v;
+    }
+
+    // Filtro global para Soft Delete si la columna existe en el ORM
+    const hasDeletedCol = this.repository.metadata.columns.some(col => col.propertyName === 'is_deleted' || col.databaseName === 'is_deleted');
+    if (hasDeletedCol) {
+      where['is_deleted'] = false;
     }
 
     /* LIKE */

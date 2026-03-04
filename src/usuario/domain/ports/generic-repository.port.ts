@@ -28,4 +28,5 @@ export abstract class GenericRepositoryPort<E, K> {
   abstract count(query?: Query<E>): Promise<number>;
   abstract deleteMany(ids: K[]): Promise<E[]>;
   abstract clear(): Promise<void>;
+  abstract softDelete(id: K): Promise<void>;
 }

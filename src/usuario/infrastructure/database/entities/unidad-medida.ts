@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, DeleteDateColumn } from 'typeorm';
 
 @Entity('unidad_medida')
 export class UnidadMedida {
@@ -10,4 +10,13 @@ export class UnidadMedida {
 
     @Column({ length: 10, nullable: true })
     abreviatura: string;
+
+    @Column({ default: false })
+    is_deleted: boolean;
+
+    @DeleteDateColumn({ nullable: true })
+    deleted_at: Date;
+
+    @Column({ default: true })
+    is_activo: boolean;
 }

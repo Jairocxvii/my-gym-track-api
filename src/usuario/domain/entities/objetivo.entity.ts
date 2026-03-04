@@ -7,6 +7,9 @@ export class ObjetivoEntity {
     fechaInicio: Date;
     fechaLimite: Date;
     completado: boolean;
+    isDeleted: boolean;
+    deletedAt?: Date;
+    isActivo: boolean;
     tipoObjetivoNombre?: string;
     unidadMedidaNombre?: string;
 

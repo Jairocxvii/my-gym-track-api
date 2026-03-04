@@ -1,4 +1,4 @@
-import { IsString, IsDateString, IsOptional, IsEnum, IsNumber, Min, Max, IsBoolean } from 'class-validator';
+import { IsString, IsDateString, IsOptional, IsNumber, IsBoolean } from 'class-validator';
 
 export class ObjetivoCreateDto {
     @IsNumber()

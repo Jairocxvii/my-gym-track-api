@@ -39,6 +39,9 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
             fechaInicio: orm.fecha_inicio,
             fechaLimite: orm.fecha_limite,
             completado: orm.completado,
+            isDeleted: orm.is_deleted,
+            deletedAt: orm.deleted_at,
+            isActivo: orm.is_activo,
             tipoObjetivoNombre: orm.tipo_objetivo?.nombre,
             unidadMedidaNombre: orm.tipo_objetivo?.unidad_medida?.nombre,
         });
@@ -54,6 +57,9 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
             fecha_inicio: domain.fechaInicio,
             fecha_limite: domain.fechaLimite,
             completado: domain.completado,
+            is_deleted: domain.isDeleted,
+            deleted_at: domain.deletedAt,
+            is_activo: domain.isActivo,
         };
     }
 
@@ -85,6 +91,9 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
                     id: t.id,
                     nombre: t.nombre,
                     unidadMedidaId: t.unidad_medida_id,
+                    isDeleted: t.is_deleted,
+                    deletedAt: t.deleted_at,
+                    isActivo: t.is_activo,
                 }),
         );
     }
@@ -109,6 +118,9 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
                     id: u.id,
                     nombre: u.nombre,
                     abreviatura: u.abreviatura,
+                    isDeleted: u.is_deleted,
+                    deletedAt: u.deleted_at,
+                    isActivo: u.is_activo,
                 }),
         );
     }
@@ -119,6 +131,7 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
                 objetivo_id: goalId,
                 usuario_id: usuarioId,
             },
+            relations: ['objetivo', 'unidad_medida'],
         });
         return activities.map(
             (a) =>
@@ -131,6 +144,38 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
                     descripcion: a.descripcion,
                     valorEspecifico: Number(a.valor_especifico),
                     createdAt: a.creado_en,
+                    isDeleted: a.is_deleted,
+                    deletedAt: a.deleted_at,
+                    isActivo: a.is_activo,
+                    nombreObjetivo: a.objetivo?.nombre_personalizado,
+                    unidadMedidaNombre: a.unidad_medida?.nombre,
+                }),
+        );
+    }
+
+    async findActivities(usuarioId: number): Promise<ActividadEntity[]> {
+        const activities = await this.actividadRepo.find({
+            where: {
+                usuario_id: usuarioId,
+            },
+            relations: ['objetivo', 'unidad_medida'],
+        });
+        return activities.map(
+            (a) =>
+                new ActividadEntity({
+                    id: a.id,
+                    objetivoId: a.objetivo_id,
+                    usuarioId: a.usuario_id,
+                    unidadMedidaId: a.unidad_medida_id,
+                    nombre: a.nombre,
+                    descripcion: a.descripcion,
+                    valorEspecifico: Number(a.valor_especifico),
+                    createdAt: a.creado_en,
+                    isDeleted: a.is_deleted,
+                    deletedAt: a.deleted_at,
+                    isActivo: a.is_activo,
+                    nombreObjetivo: a.objetivo?.nombre_personalizado,
+                    unidadMedidaNombre: a.unidad_medida?.nombre,
                 }),
         );
     }
@@ -143,6 +188,10 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
         if (!goal) {
             throw new Error('Objetivo no encontrado o no pertenece al usuario');
         }
+
+        const unit = await this.unidadMedidaRepo.findOne({
+            where: { id: activity.unidadMedidaId },
+        });
 
         const created = await this.actividadRepo.save({
             objetivo_id: activity.objetivoId,
@@ -162,6 +211,11 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
             descripcion: created.descripcion,
             valorEspecifico: Number(created.valor_especifico),
             createdAt: created.creado_en,
+            isDeleted: created.is_deleted,
+            deletedAt: created.deleted_at,
+            isActivo: created.is_activo,
+            nombreObjetivo: goal.nombre_personalizado,
+            unidadMedidaNombre: unit?.nombre,
         });
     }
 
@@ -177,7 +231,11 @@ export class ObjetivoAdapter extends GenericTypeOrmAdapter<ObjetivoEntity, Objet
             throw new Error('Actividad no encontrada o no pertenece al usuario');
         }
 
-        await this.actividadRepo.delete(activityId);
+        await this.actividadRepo.update(activityId, {
+            is_deleted: true,
+            is_activo: false,
+            deleted_at: new Date(),
+        });
     }
 }
 
@@ -192,5 +250,8 @@ export const OBJETIVO_DOMAIN_TO_COLUMN: Record<keyof ObjetivoEntity, string> = {
     completado: 'completado',
     tipoObjetivoNombre: '',
     unidadMedidaNombre: '',
+    isDeleted: 'is_deleted',
+    deletedAt: 'deleted_at',
+    isActivo: 'is_activo',
 };
 

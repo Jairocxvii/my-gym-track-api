@@ -11,6 +11,7 @@ export abstract class ObjetivoPort extends GenericRepositoryPort<ObjetivoEntity,
     abstract createType(type: TipoObjetivoEntity): Promise<TipoObjetivoEntity>;
     abstract findUnits(): Promise<UnidadMedidaEntity[]>;
     abstract findActivitiesByGoalId(usuarioId: number, goalId: number): Promise<ActividadEntity[]>;
+    abstract findActivities(usuarioId: number): Promise<ActividadEntity[]>;
     abstract addActivity(usuarioId: number, activity: ActividadEntity): Promise<ActividadEntity>;
     abstract removeActivity(usuarioId: number, activityId: number): Promise<void>;
 }

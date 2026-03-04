@@ -1,5 +1,5 @@
 // rutina.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, DeleteDateColumn } from 'typeorm';
 import { Sesion } from './sesion';
 
 @Entity('rutina')
@@ -23,4 +23,13 @@ export class Rutina {
   /* intra-módulo */
   @OneToMany(() => Sesion, (s) => s.rutina, { cascade: true })
   sesiones: Sesion[];
+
+  @Column({ default: false, name: 'is_deleted' })
+  isDeleted: boolean;
+
+  @DeleteDateColumn({ nullable: true, name: 'deleted_at' })
+  deletedAt: Date;
+
+  @Column({ default: true, name: 'is_activo' })
+  isActivo: boolean;
 }
